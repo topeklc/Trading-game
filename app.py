@@ -1,5 +1,5 @@
 from flask import Flask, request, render_template, redirect, url_for
-from game import *
+from main import *
 from forms import ActionForm
 
 app = Flask(__name__)
