@@ -29,3 +29,6 @@ yfinance==0.1.64
 
 # wtforms
 wtforms==2.3.3
+
+# gunicorn
+gunicorn==20.1.0
