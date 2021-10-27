@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Trading Game</title>
+</head>
+<body>
+<h1>Trading Game</h1>
+<br>
+<center><h2>It's {{ weekday }} {{ now }}</h2></center>
+<br>
+<center><form method="POST" action="another_day">
+    <input type="submit" class="next" name="action" width="50" value="Next Day">
+</form></center><br>
+<center><fieldset>
+   <legend>Portfolio</legend>
+    Your cash: {{ cash|round(2) }}<br>
+    Your assets:<br>
+        {% for asset in portfolio %}
+            {{asset}} : {{ portfolio[asset]|round(2) }}
+    {% endfor %}
+    </fieldset></center>
+    <center><fieldset>
+   <legend>Today's assets prices</legend>
+{% for asset, form in zipped %}
+        {{ asset }} -> {{ assets_dict[asset] }} USD <form method="GET" action="up_portfolio">{{ form.amount }} {{ form.buy }} {{ form.sell }}</form>
+{% endfor %}
+    </fieldset></center>
+
+
+
+
+
+</body>
+</html>
+
+
+
+
+
+
+<style>
+body {
+  background-color: darkgray;
+}
+p1 {
+  font-family: "Times New Roman", Times, serif;
+}
+h1 {
+  font-family: "Times New Roman", Times, serif;
+  width:500px;
+  margin: 0 auto;
+  text-align: center;
+
+}
+
+
+label {
+  font-family: "Times New Roman", Times, serif;
+  width:500px;
+  margin: 0 auto;
+  text-align: center;
+  border: 5px;
+}
+input {
+  max-width: 100px;
+  width: fit-content;
+  text-align: center;
+
+}
+
+fieldset {
+  font-family: "Times New Roman", Times, serif;
+  text-align: center;
+  width:400px;
+
+}
+
+.next {
+height: 50px;
+width: 100px;
+}
+
+
+</style>
