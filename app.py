@@ -16,10 +16,10 @@ def mainpage():
 @app.route('/', methods=['POST', 'GET'])
 def start_game():
     if request.method == 'POST':
-        return redirect(url_for('started-game'))
+        return redirect(url_for('started'))
 
 
-@app.route('/started-game', methods=['POST', 'GET'])
+@app.route('/started', methods=['POST', 'GET'])
 def game():
     global portfolio
     starting_cash = request.form['smoney']
@@ -44,7 +44,7 @@ def game():
                            starting_year=starting_year, now=now, zipped=zipped, assets_dict=assets_dict, weekday=weekday)
 
 
-@app.route('/started-game', methods=['POST', 'GET'])
+@app.route('/started', methods=['POST', 'GET'])
 def next_day():
     if request.form['action'] == 'Next Day':
         return redirect(url_for('another_day'))
