@@ -47,10 +47,10 @@ def game():
 @app.route('/started', methods=['POST', 'GET'])
 def next_day():
     if request.form['action'] == 'Next Day':
-        return redirect(url_for('another_day'))
+        return redirect(url_for('day'))
 
 
-@app.route('/another_day', methods=['POST', 'GET'])
+@app.route('/day', methods=['POST', 'GET'])
 def another_day():
     global game
     game.next_day()
@@ -72,7 +72,7 @@ def another_day():
                             now=now, zipped=zipped, assets_dict=assets_dict, portfolio=portfolio_statement, weekday=weekday)
 
 
-@app.route('/up_portfolio', methods=['POST', 'GET'])
+@app.route('/up', methods=['POST', 'GET'])
 def up_portfolio():
     global game
     portfolioo = portfolio
