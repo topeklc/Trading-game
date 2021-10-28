@@ -9,7 +9,7 @@
 <br>
 <center><h2>It's {{ weekday }} {{ now }}</h2></center>
 <br>
-<center><form method="POST" action="another_day">
+<center><form method="POST" action="day">
     <input type="submit" class="next" name="action" width="50" value="Next Day">
 </form></center><br>
 <center><fieldset>
@@ -23,7 +23,7 @@
     <center><fieldset>
    <legend>Today's assets prices</legend>
 {% for asset, form in zipped %}
-        {{ asset }} -> {{ assets_dict[asset] }} USD <form method="GET" action="up_portfolio">{{ form.amount }} {{ form.buy }} {{ form.sell }}</form>
+        {{ asset }} -> {{ assets_dict[asset] }} USD <form method="GET" action="up">{{ form.amount }} {{ form.buy }} {{ form.sell }}</form>
 {% endfor %}
     </fieldset></center>
 
