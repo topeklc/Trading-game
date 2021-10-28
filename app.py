@@ -20,7 +20,7 @@ def start_game():
 
 
 @app.route('/started', methods=['POST', 'GET'])
-def game():
+def game_start():
     global portfolio
     starting_cash = request.form['smoney']
     starting_year = request.form['year']
