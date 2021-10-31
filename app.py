@@ -1,12 +1,17 @@
 from flask import Flask, request, render_template, redirect, url_for, session
 from main import *
 from forms import ActionForm
+import secrets
+
+
 
 app = Flask(__name__)
 
-portfolio = Portfolio(0)
-game = Game(2017)
-user = ''
+secret = secrets.token_urlsafe(32)
+app.secret_key = secret
+
+
+
 
 @app.route('/')
 def mainpage():
@@ -16,20 +21,23 @@ def mainpage():
 @app.route('/', methods=['POST', 'GET'])
 def start_game():
     if request.method == 'POST':
-        global user
-        user = request.form['user']
-        session['user'] = user
         return redirect(url_for('started'))
 
 
 @app.route('/started', methods=['POST', 'GET'])
 def game_start():
-    global portfolio, user
     starting_cash = request.form['smoney']
     starting_year = request.form['year']
-    user = request.form['user']
+    session['user'] = request.form['user']
+    user = session['user']
     game = Game(starting_year)
     portfolio = Portfolio(starting_cash)
+    session['game'] = game.encode()
+    session['portfolio'] = portfolio.encode()
+    for k, v in json.loads(session['game']).items():
+        setattr(game, k, v)
+    for k, v in json.loads(session['portfolio']).items():
+        setattr(portfolio, k, v)
     now = game.current_day
     weekday = game.current_weekday
     assets_dict = {}
@@ -56,7 +64,13 @@ def next_day():
 
 @app.route('/day', methods=['POST', 'GET'])
 def another_day():
-    global game, user, portfolio
+    game = Game(2017)
+    portfolio = Portfolio(0)
+    for k, v in json.loads(session['game']).items():
+        setattr(game, k, v)
+    for k, v in json.loads(session['portfolio']).items():
+        setattr(portfolio, k, v)
+    user = session['user']
     game.next_day()
     portfolio_state = portfolio
     now = game.current_day
@@ -72,13 +86,22 @@ def another_day():
         except KeyError:
             pass
     zipped = zip(assets_dict, forms)
-    return render_template('started_game.html', cash=portfolio.cash,
+    session['game'] = game.encode()
+    session['portfolio'] = portfolio.encode()
+    return render_template('started_game.html', cash=portfolio_state.cash,
                             now=now, zipped=zipped, assets_dict=assets_dict, portfolio=portfolio_statement, weekday=weekday, user=user)
 
 
 @app.route('/up', methods=['POST', 'GET'])
 def up_portfolio():
-    global game, user, portfolio
+    game = Game(2017)
+    portfolio = Portfolio(0)
+    for k, v in json.loads(session['game']).items():
+        setattr(game, k, v)
+    for k, v in json.loads(session['portfolio']).items():
+        setattr(portfolio, k, v)
+
+    user = session['user']
     now = game.current_day
     weekday = game.current_weekday
     portfolio_statement = portfolio.asset_amounts
@@ -102,6 +125,8 @@ def up_portfolio():
         except KeyError:
             pass
     zipped = zip(assets_dict, forms)
+    session['game'] = game.encode()
+    session['portfolio'] = portfolio.encode()
     return render_template('started_game.html', cash=portfolio.cash,
                             now=now, zipped=zipped, assets_dict=assets_dict, portfolio=portfolio_statement, weekday=weekday, user=user)
 

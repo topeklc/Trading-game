@@ -1,8 +1,7 @@
 import yfinance as yf
 import pandas as pd
 import datetime
-from decimal import *
-
+import json
 
 # Stocks
 msft = yf.Ticker('MSFT')
@@ -59,6 +58,12 @@ class Game:
         else:
             'Game Over'
 
+    def encode(self):
+        return json.dumps(self.__dict__)
+
+
+
+
 
 class Asset:
 
@@ -75,15 +80,19 @@ class Portfolio:
                               'Monero': 0, 'Gold': 0, 'Coal': 0, 'Brent': 0}
 
     def buy_asset(self, amount, asset, game):
-        if self.cash >= Decimal(game.get_asset_price(asset)).quantize(Decimal('.01'), rounding=ROUND_DOWN) * Decimal(amount).quantize(Decimal('.01'), rounding=ROUND_DOWN):
-            self.asset_amounts[asset.name] += round(Decimal(amount).quantize(Decimal('.01'), rounding=ROUND_DOWN), 1)
-            self.cash = Decimal(self.cash).quantize(Decimal('.01'), rounding=ROUND_DOWN) - round(Decimal(game.get_asset_price(asset)).quantize(Decimal('.01'), rounding=ROUND_DOWN), 1) * round(Decimal(amount).quantize(Decimal('.01'), rounding=ROUND_DOWN), 1)
+        amount = int(amount * 10)
+        if float(self.cash) >= (game.get_asset_price(asset) / 10 * amount):
+            self.asset_amounts[asset.name] += amount
+            self.cash = self.cash - game.get_asset_price(asset) / 10 * amount
 
     def sell_asset(self, amount, asset, game):
-        if self.asset_amounts[asset.name] >= round(Decimal(amount).quantize(Decimal('.01'), rounding=ROUND_DOWN), 1):
-            self.asset_amounts[asset.name] -= round(Decimal(amount).quantize(Decimal('.01'), rounding=ROUND_DOWN), 1)
-            self.cash = Decimal(self.cash).quantize(Decimal('.01'), rounding=ROUND_DOWN) + round(Decimal(game.get_asset_price(asset)).quantize(Decimal('.01'), rounding=ROUND_DOWN), 1) * round(Decimal(amount).quantize(Decimal('.01'), rounding=ROUND_DOWN), 1)
+        amount = int(amount * 10)
+        if self.asset_amounts[asset.name] >= amount / 10:
+            self.asset_amounts[asset.name] -= amount
+            self.cash = self.cash + game.get_asset_price(asset) / 10 * amount
 
+    def encode(self):
+        return json.dumps(self.__dict__)
 
 microsoft = Asset('Microsoft', msft_history)
 apple = Asset('Apple', apple_history)
@@ -96,7 +105,6 @@ coal = Asset('Coal', coal_history)
 brent = Asset('Brent', brent_history)
 
 assets_list = [microsoft, apple, tesla, bitcoin, ethereum, monero, gold, coal, brent]
-
 # for i in assets_list:
 #     print("'"+i.name+"'"+':, ', end='')
 

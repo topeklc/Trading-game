@@ -14,10 +14,10 @@
 </form></center><br>
 <center><fieldset>
    <legend>Portfolio</legend>
-    Your cash: {{ cash|round(2) }}<br>
+    Your cash: {{'%0.2f'|format(cash|float)}}<br>
     Your assets:<br>
         {% for asset in portfolio %}
-            {{asset}} : {{ portfolio[asset]|round(2) }}
+            {{asset}} : {{ portfolio[asset]|round(2) / 10 }}
     {% endfor %}
     </fieldset></center>
     <center><fieldset>
