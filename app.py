@@ -4,12 +4,11 @@ from forms import ActionForm
 import secrets
 
 
-
 app = Flask(__name__)
 
 secret = secrets.token_urlsafe(32)
 app.secret_key = secret
-
+app.config.update(SESSION_COOKIE_SAMESITE="None", SESSION_COOKIE_SECURE=True)
 
 
 
