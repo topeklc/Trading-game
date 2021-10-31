@@ -3,14 +3,17 @@ from main import *
 from forms import ActionForm
 import secrets
 from flask_session import Session
-from redis import Redis
+import redis
 app = Flask(__name__)
 
 secret = secrets.token_urlsafe(32)
 app.secret_key = secret
 SESSION_TYPE = 'redis'
-app.config.from_object(__name__)
-Session(app)
+app.config['SESSION_TYPE'] = 'redis'
+app.config['SESSION_PERMANENT'] = False
+app.config['SESSION_USE_SIGNER'] = True
+app.config['SESSION_REDIS'] = redis.from_url('redis://localhost:6379')
+server_session = Session(app)
 
 
 
