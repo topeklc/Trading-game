@@ -4,16 +4,14 @@ from forms import ActionForm
 import secrets
 from flask_session import Session
 import redis
-import os
+
 app = Flask(__name__)
-
-
-r = redis.from_url(os.environ.get("REDIS_URL"))
+SESSION_TYPE = 'redis'
+app.config['SESSION_REDIS'] = redis.from_url('rediss://:p2e661a327d81ceefd509b9be48dba1219de231ad5652a73110c699ce798dd0a3@ec2-54-77-242-13.eu-west-1.compute.amazonaws.com:11730', ssl_cert_reqs=None)
 secret = secrets.token_urlsafe(32)
 app.secret_key = secret
-SESSION_TYPE = 'redis'
-app.config['SESSION_REDIS'] = redis.from_url('rediss://:p2e661a327d81ceefd509b9be48dba1219de231ad5652a73110c699ce798dd0a3@ec2-54-77-242-13.eu-west-1.compute.amazonaws.com:11730')
-server_session = Session(app)
+app.config.from_object(__name__)
+sess = Session(app)
 
 
 @app.route('/')
@@ -135,4 +133,6 @@ def up_portfolio():
 
 
 if __name__ == '__main__':
+
+
     app.run()
