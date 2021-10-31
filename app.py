@@ -2,13 +2,15 @@ from flask import Flask, request, render_template, redirect, url_for, session
 from main import *
 from forms import ActionForm
 import secrets
-
-
+from flask_session import Session
+from redis import Redis
 app = Flask(__name__)
 
 secret = secrets.token_urlsafe(32)
 app.secret_key = secret
-app.config.update(SESSION_COOKIE_SAMESITE="None", SESSION_COOKIE_SECURE=True)
+SESSION_TYPE = 'redis'
+app.config.from_object(__name__)
+Session(app)
 
 
 

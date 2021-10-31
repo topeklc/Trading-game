@@ -33,6 +33,9 @@ wtforms==2.3.3
 # gunicorn
 gunicorn==20.1.0
 
+# Session
+Flask-Session==0.4
 
-
+# redis
+redis==3.5.3
 
