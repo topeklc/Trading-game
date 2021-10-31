@@ -36,6 +36,4 @@ gunicorn==20.1.0
 # Session
 Flask-Session==0.4
 
-# jsonpickle
-jsonpickle==1.4.2
 
