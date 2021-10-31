@@ -12,7 +12,7 @@ SESSION_TYPE = 'redis'
 app.config['SESSION_TYPE'] = 'redis'
 app.config['SESSION_PERMANENT'] = False
 app.config['SESSION_USE_SIGNER'] = True
-app.config['SESSION_REDIS'] = redis.from_url('redis://localhost:6379')
+app.config['SESSION_REDIS'] = redis.from_url('rediss://:p34e9cdd95837439472ecca638dba39fb60623a1324969417c664f4c8978e6f4c@ec2-54-77-242-13.eu-west-1.compute.amazonaws.com:17420')
 server_session = Session(app)
 
 
