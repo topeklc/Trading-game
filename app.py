@@ -4,17 +4,16 @@ from forms import ActionForm
 import secrets
 from flask_session import Session
 import redis
+import os
 app = Flask(__name__)
 
+
+r = redis.from_url(os.environ.get("REDIS_URL"))
 secret = secrets.token_urlsafe(32)
 app.secret_key = secret
 SESSION_TYPE = 'redis'
-app.config['SESSION_TYPE'] = 'redis'
-app.config['SESSION_PERMANENT'] = False
-app.config['SESSION_USE_SIGNER'] = True
-app.config['SESSION_REDIS'] = redis.from_url('rediss://:p34e9cdd95837439472ecca638dba39fb60623a1324969417c664f4c8978e6f4c@ec2-54-77-242-13.eu-west-1.compute.amazonaws.com:17420')
+app.config['SESSION_REDIS'] = redis.from_url('rediss://:p2e661a327d81ceefd509b9be48dba1219de231ad5652a73110c699ce798dd0a3@ec2-54-77-242-13.eu-west-1.compute.amazonaws.com:11730')
 server_session = Session(app)
-
 
 
 @app.route('/')
