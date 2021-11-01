@@ -78,19 +78,22 @@ class Portfolio:
         self.cash = float(start_cash)
         self.asset_amounts = {'Microsoft': 0, 'Apple': 0, 'Tesla': 0, 'Bitcoin': 0, 'Ethereum': 0,
                               'Monero': 0, 'Gold': 0, 'Coal': 0, 'Brent': 0}
+        self.transactions_history = []
 
     def buy_asset(self, amount, asset, game):
         amount = int(amount * 10)
         if float(self.cash) >= (game.get_asset_price(asset) / 10 * amount):
             self.asset_amounts[asset.name] += amount
             self.cash = self.cash - game.get_asset_price(asset) / 10 * amount
+            self.transactions_history.append(f'{game.current_day} BUY {amount / 10} {asset.name} at price {game.get_asset_price(asset)} for {round(game.get_asset_price(asset) * amount / 10, 2)}')
 
     def sell_asset(self, amount, asset, game):
         amount = int(amount * 10)
         if self.asset_amounts[asset.name] >= amount:
             self.asset_amounts[asset.name] -= amount
             self.cash = self.cash + game.get_asset_price(asset) / 10 * amount
-
+            self.transactions_history.append(
+                f'{game.current_day} SELL {amount / 10} {asset.name} at price {game.get_asset_price(asset)} for {round(game.get_asset_price(asset) * amount / 10, 2)}')
 
 
     def encode(self):

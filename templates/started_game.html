@@ -5,27 +5,44 @@
     <title>Trading Game</title>
 </head>
 <body>
-<h1>Trading Game</h1>
+<div class="row">
+<div class="col"></div>
+<div class="col"><h1>Trading Game</h1>
 <br>
 <center><h2>Hi {{ user }}! It's {{ weekday }} {{ now }}</h2></center>
 <br>
 <center><form method="POST" action="day">
     <input type="submit" class="next" name="action" width="50" value="Next Day">
 </form></center><br>
-<center>{{ error }}<br><br><fieldset>
+<center>{{ error }}</center></div>
+<div class="col"></div>
+</div>
+<div class="row">
+    <div class="col">
+    <aside><fieldset>
     <legend>Portfolio</legend>
     Your cash: {{'%0.2f'|format(cash|float)}}<br>
     Your assets:<br>
         {% for asset in portfolio %}
-            {{asset}} : {{ portfolio[asset]|round(2) / 10 }}
+            {{asset}} : {{ portfolio[asset]|round(2) / 10 }}<br>
     {% endfor %}
-    </fieldset></center>
-    <center><fieldset>
+    </fieldset>
+    <fieldset>
+        <legend>Transactions history</legend>
+                {% for transaction in transactions_history %}
+                {{ transaction }}<br>
+                {% endfor %}
+</fieldset>
+</aside></div>
+    <div class="col"><center><fieldset>
    <legend>Today's assets prices</legend>
 {% for asset, form in zipped %}
         {{ asset }} -> {{ assets_dict[asset] }} USD <form method="GET" action="up">{{ form.amount }} {{ form.buy }} {{ form.sell }}</form>
 {% endfor %}
-    </fieldset></center>
+    </fieldset></center></div><div class="col"></div>
+    </div>
+
+
 
 
 
@@ -81,5 +98,16 @@ height: 50px;
 width: 100px;
 }
 
+
+.row {
+  display: flex;
+}
+
+.col {
+  flex: 1;
+
+  padding: 1em;
+
+}
 
 </style>

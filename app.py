@@ -78,6 +78,7 @@ def another_day():
     now = game.current_day
     weekday = game.current_weekday
     portfolio_statement = portfolio_state.asset_amounts
+    transactions_history = portfolio.transactions_history
     assets_dict = {}
     forms = []
     for asset in assets_list:
@@ -91,7 +92,7 @@ def another_day():
     session['game'] = game.encode()
     session['portfolio'] = portfolio.encode()
     return render_template('started_game.html', cash=portfolio_state.cash,
-                            now=now, zipped=zipped, assets_dict=assets_dict, portfolio=portfolio_statement, weekday=weekday, user=user)
+                            now=now, zipped=zipped, assets_dict=assets_dict, portfolio=portfolio_statement, weekday=weekday, user=user, transactions_history=transactions_history)
 
 
 @app.route('/up', methods=['POST', 'GET'])
@@ -108,6 +109,7 @@ def up_portfolio():
     weekday = game.current_weekday
     portfolio_statement = portfolio.asset_amounts
     amount = 0
+    transactions_history = portfolio.transactions_history
     for i, j in enumerate(request.args):
         if i == 0:
             try:
@@ -121,10 +123,11 @@ def up_portfolio():
                 if portfolio.cash < amount * game.get_asset_price(globals()[j.split('-')[0].lower()]):
                     error = 'Not enough cash!'
             elif j.split('-')[1] == 'sell':
-                portfolio.sell_asset(amount, globals()[j.split('-')[0].lower()], game)
-                if portfolio.asset_amounts[j.split('-')[0]] / 10 < amount :
-                    asset = j.split('-')[0].lower()
+                if portfolio.asset_amounts[j.split('-')[0]] /10 < amount:
+                    asset = j.split('-')[0]
                     error = f'Not enough {asset}!'
+                portfolio.sell_asset(amount, globals()[j.split('-')[0].lower()], game)
+
 
 
     assets_dict = {}
@@ -140,7 +143,7 @@ def up_portfolio():
     session['game'] = game.encode()
     session['portfolio'] = portfolio.encode()
     return render_template('started_game.html', cash=portfolio.cash,
-                            now=now, zipped=zipped, assets_dict=assets_dict, portfolio=portfolio_statement, weekday=weekday, user=user, error=error)
+                            now=now, zipped=zipped, assets_dict=assets_dict, portfolio=portfolio_statement, weekday=weekday, user=user, transactions_history=transactions_history, error=error)
 
 
 if __name__ == '__main__':
