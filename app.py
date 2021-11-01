@@ -14,6 +14,7 @@ app.config.from_object(__name__)
 sess = Session(app)
 
 
+
 @app.route('/')
 def mainpage():
     return render_template('main.html')
@@ -101,7 +102,7 @@ def up_portfolio():
         setattr(game, k, v)
     for k, v in json.loads(session['portfolio']).items():
         setattr(portfolio, k, v)
-
+    error = ''
     user = session['user']
     now = game.current_day
     weekday = game.current_weekday
@@ -109,12 +110,22 @@ def up_portfolio():
     amount = 0
     for i, j in enumerate(request.args):
         if i == 0:
-            amount = float(request.args.get(j))
+            try:
+                amount = float(request.args.get(j))
+            except ValueError:
+                error = 'You have to insert number!'
+                break
         if i == 1:
             if j.split('-')[1] == 'buy':
                 portfolio.buy_asset(amount, globals()[j.split('-')[0].lower()], game)
+                if portfolio.cash < amount * game.get_asset_price(globals()[j.split('-')[0].lower()]):
+                    error = 'Not enough cash!'
             elif j.split('-')[1] == 'sell':
                 portfolio.sell_asset(amount, globals()[j.split('-')[0].lower()], game)
+                if portfolio.asset_amounts[j.split('-')[0]] / 10 < amount :
+                    asset = j.split('-')[0].lower()
+                    error = f'Not enough {asset}!'
+
 
     assets_dict = {}
     forms = []
@@ -129,7 +140,7 @@ def up_portfolio():
     session['game'] = game.encode()
     session['portfolio'] = portfolio.encode()
     return render_template('started_game.html', cash=portfolio.cash,
-                            now=now, zipped=zipped, assets_dict=assets_dict, portfolio=portfolio_statement, weekday=weekday, user=user)
+                            now=now, zipped=zipped, assets_dict=assets_dict, portfolio=portfolio_statement, weekday=weekday, user=user, error=error)
 
 
 if __name__ == '__main__':

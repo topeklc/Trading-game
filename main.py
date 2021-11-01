@@ -87,9 +87,11 @@ class Portfolio:
 
     def sell_asset(self, amount, asset, game):
         amount = int(amount * 10)
-        if self.asset_amounts[asset.name] >= amount / 10:
+        if self.asset_amounts[asset.name] >= amount:
             self.asset_amounts[asset.name] -= amount
             self.cash = self.cash + game.get_asset_price(asset) / 10 * amount
+
+
 
     def encode(self):
         return json.dumps(self.__dict__)

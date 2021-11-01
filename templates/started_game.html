@@ -12,8 +12,8 @@
 <center><form method="POST" action="day">
     <input type="submit" class="next" name="action" width="50" value="Next Day">
 </form></center><br>
-<center><fieldset>
-   <legend>Portfolio</legend>
+<center>{{ error }}<br><br><fieldset>
+    <legend>Portfolio</legend>
     Your cash: {{'%0.2f'|format(cash|float)}}<br>
     Your assets:<br>
         {% for asset in portfolio %}
