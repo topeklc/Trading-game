@@ -42,6 +42,8 @@ def game_start():
         setattr(portfolio, k, v)
     now = game.current_day
     weekday = game.current_weekday
+    portfolio_statement = portfolio.asset_amounts
+    entire_value = portfolio.entire_portfolio_value(game)
     assets_dict = {}
     forms = []
     for asset in assets_list:
@@ -55,7 +57,7 @@ def game_start():
     print(assets_dict)
     zipped = zip(assets_dict, forms)
     return render_template('started_game.html', cash=portfolio.cash,
-                           starting_year=starting_year, now=now, zipped=zipped, assets_dict=assets_dict, weekday=weekday, user=user)
+                           starting_year=starting_year, now=now, zipped=zipped, assets_dict=assets_dict, portfolio=portfolio_statement, weekday=weekday, user=user, entire_value=entire_value)
 
 
 @app.route('/started', methods=['POST', 'GET'])
@@ -74,11 +76,8 @@ def another_day():
         setattr(portfolio, k, v)
     user = session['user']
     game.next_day()
-    portfolio_state = portfolio
     now = game.current_day
     weekday = game.current_weekday
-    portfolio_statement = portfolio_state.asset_amounts
-    transactions_history = portfolio.transactions_history
     assets_dict = {}
     forms = []
     for asset in assets_list:
@@ -88,11 +87,13 @@ def another_day():
             forms.append(form)
         except KeyError:
             pass
+    transactions_history = portfolio.transactions_history[-1:-11:-1]
+    entire_value = portfolio.entire_portfolio_value(game)
     zipped = zip(assets_dict, forms)
     session['game'] = game.encode()
     session['portfolio'] = portfolio.encode()
-    return render_template('started_game.html', cash=portfolio_state.cash,
-                            now=now, zipped=zipped, assets_dict=assets_dict, portfolio=portfolio_statement, weekday=weekday, user=user, transactions_history=transactions_history)
+    return render_template('started_game.html', cash=portfolio.cash,
+                            now=now, zipped=zipped, assets_dict=assets_dict, portfolio=portfolio.asset_amounts, weekday=weekday, user=user, transactions_history=transactions_history, entire_value=entire_value)
 
 
 @app.route('/up', methods=['POST', 'GET'])
@@ -107,9 +108,7 @@ def up_portfolio():
     user = session['user']
     now = game.current_day
     weekday = game.current_weekday
-    portfolio_statement = portfolio.asset_amounts
     amount = 0
-    transactions_history = portfolio.transactions_history
     for i, j in enumerate(request.args):
         if i == 0:
             try:
@@ -128,8 +127,6 @@ def up_portfolio():
                     error = f'Not enough {asset}!'
                 portfolio.sell_asset(amount, globals()[j.split('-')[0].lower()], game)
 
-
-
     assets_dict = {}
     forms = []
     for asset in assets_list:
@@ -139,14 +136,14 @@ def up_portfolio():
             forms.append(form)
         except KeyError:
             pass
+    transactions_history = portfolio.transactions_history[-1:-11:-1]
+    entire_value = portfolio.entire_portfolio_value(game)
     zipped = zip(assets_dict, forms)
     session['game'] = game.encode()
     session['portfolio'] = portfolio.encode()
     return render_template('started_game.html', cash=portfolio.cash,
-                            now=now, zipped=zipped, assets_dict=assets_dict, portfolio=portfolio_statement, weekday=weekday, user=user, transactions_history=transactions_history, error=error)
+                            now=now, zipped=zipped, assets_dict=assets_dict, portfolio=portfolio.asset_amounts, weekday=weekday, user=user, transactions_history=transactions_history, error=error, entire_value=entire_value)
 
 
 if __name__ == '__main__':
-
-
     app.run()

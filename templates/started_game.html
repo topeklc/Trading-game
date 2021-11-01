@@ -21,14 +21,15 @@
     <div class="col">
     <aside><fieldset>
     <legend>Portfolio</legend>
-    Your cash: {{'%0.2f'|format(cash|float)}}<br>
-    Your assets:<br>
+    Your cash: {{'%0.2f'|format(cash|float)}} USD<br>
+    Entire value of your wallet: {{'%0.2f'|format(entire_value|float)}} USD<br>
+        Your assets:<br>
         {% for asset in portfolio %}
             {{asset}} : {{ portfolio[asset]|round(2) / 10 }}<br>
     {% endfor %}
     </fieldset>
     <fieldset>
-        <legend>Transactions history</legend>
+        <legend>Transactions history (last 10)</legend>
                 {% for transaction in transactions_history %}
                 {{ transaction }}<br>
                 {% endfor %}
@@ -89,7 +90,7 @@ input {
 fieldset {
   font-family: "Times New Roman", Times, serif;
   text-align: center;
-  width:400px;
+  width:450px;
 
 }
 

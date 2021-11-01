@@ -79,22 +79,30 @@ class Portfolio:
         self.asset_amounts = {'Microsoft': 0, 'Apple': 0, 'Tesla': 0, 'Bitcoin': 0, 'Ethereum': 0,
                               'Monero': 0, 'Gold': 0, 'Coal': 0, 'Brent': 0}
         self.transactions_history = []
+        self.entire_value = 0
 
     def buy_asset(self, amount, asset, game):
         amount = int(amount * 10)
         if float(self.cash) >= (game.get_asset_price(asset) / 10 * amount):
             self.asset_amounts[asset.name] += amount
             self.cash = self.cash - game.get_asset_price(asset) / 10 * amount
-            self.transactions_history.append(f'{game.current_day} BUY {amount / 10} {asset.name} at price {game.get_asset_price(asset)} for {round(game.get_asset_price(asset) * amount / 10, 2)}')
+            self.transactions_history.append(f'{game.current_day} BUY {amount / 10} {asset.name} at price {game.get_asset_price(asset)} USD, for {round(game.get_asset_price(asset) * amount / 10, 2)} USD')
 
     def sell_asset(self, amount, asset, game):
         amount = int(amount * 10)
         if self.asset_amounts[asset.name] >= amount:
             self.asset_amounts[asset.name] -= amount
             self.cash = self.cash + game.get_asset_price(asset) / 10 * amount
-            self.transactions_history.append(
-                f'{game.current_day} SELL {amount / 10} {asset.name} at price {game.get_asset_price(asset)} for {round(game.get_asset_price(asset) * amount / 10, 2)}')
+            self.transactions_history.append(f'{game.current_day} SELL {amount / 10} {asset.name} at price {game.get_asset_price(asset)} USD, for {round(game.get_asset_price(asset) * amount / 10, 2)} USD')
 
+    def entire_portfolio_value(self, game):
+        self.entire_value = self.cash
+        for asset, amount in self.asset_amounts.items():
+            try:
+                self.entire_value += (game.get_asset_price(globals()[asset.lower()]) * amount / 10)
+            except KeyError:
+                pass
+        return self.entire_value
 
     def encode(self):
         return json.dumps(self.__dict__)
@@ -110,32 +118,3 @@ coal = Asset('Coal', coal_history)
 brent = Asset('Brent', brent_history)
 
 assets_list = [microsoft, apple, tesla, bitcoin, ethereum, monero, gold, coal, brent]
-# for i in assets_list:
-#     print("'"+i.name+"'"+':, ', end='')
-
-
-# game = Game(2017)
-# portfolio = Portfolio(100000)
-#
-#
-#
-#
-#
-#
-#
-# game.next_day()
-# game.next_day()
-# game.next_day()
-# print(game.current_day)
-# portfolio.buy_asset(1, bitcoin, game)
-# portfolio.buy_asset(50, ethereum, game)
-# portfolio.buy_asset(100, tesla, game)
-# print(game.get_asset_price(bitcoin))
-# print(portfolio.asset_amounts)
-# print(portfolio.cash)
-# game.next_day()
-# game.next_day()
-# portfolio.sell_asset(1, bitcoin, game)
-# print(portfolio.cash)
-# print(portfolio.asset_amounts)
-# print(game.current_weekday)
