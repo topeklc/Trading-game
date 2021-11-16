@@ -5,3 +5,5 @@ class ActionForm(Form):
     amount = FloatField('amount', widget=h5widgets.NumberInput(min=0, step=0.1))
     buy = SubmitField('Buy')
     sell = SubmitField('Sell')
+    buyall = SubmitField('Buy with all')
+    sellall = SubmitField('Sell everything')

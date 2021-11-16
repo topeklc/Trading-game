@@ -115,17 +115,27 @@ def up_portfolio():
                 amount = float(request.args.get(j))
             except ValueError:
                 error = 'You have to insert number!'
-                break
-        if i == 1:
+                pass
+        elif i == 1:
             if j.split('-')[1] == 'buy':
                 portfolio.buy_asset(amount, globals()[j.split('-')[0].lower()], game)
                 if portfolio.cash < amount * game.get_asset_price(globals()[j.split('-')[0].lower()]):
                     error = 'Not enough cash!'
             elif j.split('-')[1] == 'sell':
-                if portfolio.asset_amounts[j.split('-')[0]] /10 < amount:
+                if portfolio.asset_amounts[j.split('-')[0]][0] / 10 < amount:
                     asset = j.split('-')[0]
                     error = f'Not enough {asset}!'
                 portfolio.sell_asset(amount, globals()[j.split('-')[0].lower()], game)
+            elif j.split('-')[1] == 'buyall':
+                amount = round(portfolio.cash / game.get_asset_price(globals()[j.split('-')[0].lower()]) - 0.05, 1)
+                portfolio.buy_asset(amount, globals()[j.split('-')[0].lower()], game)
+                error = ""
+            elif j.split('-')[1] == 'sellall':
+                amount = portfolio.asset_amounts[j.split('-')[0]][0] / 10
+                portfolio.sell_asset(amount, globals()[j.split('-')[0].lower()], game)
+                error = ""
+
+
 
     assets_dict = {}
     forms = []

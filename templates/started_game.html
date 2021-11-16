@@ -23,9 +23,9 @@
     <legend>Portfolio</legend>
     Your cash: {{'%0.2f'|format(cash|float)}} USD<br>
     Entire value of your wallet: {{'%0.2f'|format(entire_value|float)}} USD<br>
-        Your assets:<br>
+        <div align="left">Your assets:</div>
         {% for asset in portfolio %}
-            {{asset}} : {{ portfolio[asset]|round(2) / 10 }}<br>
+        <div align="left">{{ asset }} : {{ portfolio[asset][0]|round(2) / 10 }} {% if portfolio[asset][1]|length > 0 and portfolio[asset][0] > 0 %} Average buy price: {{ "$%.2f"|format(portfolio[asset][1]|sum / portfolio[asset][0]|round(2) * 10) }}<br></div>{% endif %}
     {% endfor %}
     </fieldset>
     <fieldset>
@@ -38,7 +38,7 @@
     <div class="col"><center><fieldset>
    <legend>Today's assets prices</legend>
 {% for asset, form in zipped %}
-        {{ asset }} -> {{ assets_dict[asset] }} USD <form method="GET" action="up">{{ form.amount }} {{ form.buy }} {{ form.sell }}</form>
+        {{ asset }} -> {{ assets_dict[asset] }} USD <form method="GET" action="up">{{ form.amount }} {{ form.buy }} {{ form.sell }} {{ form.buyall }} {{ form.sellall }}</form>
 {% endfor %}
     </fieldset></center></div><div class="col"></div>
     </div>
