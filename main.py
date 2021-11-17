@@ -50,13 +50,13 @@ class Game:
         price = float("%.2f" % asset.history.loc[self.current_day]['Close'])
         return price
 
-    def next_day(self):
-        if self.current_day != self.date_list[-1]:
-            self.day += 1
+    def next_day(self, days):
+        try:
+            self.day += days
             self.current_day = self.date_list[self.day]
             self.current_weekday = datetime.datetime.strptime(self.current_day, '%Y-%m-%d').strftime('%A')
-        else:
-            'Game Over'
+        except IndexError:
+            self.current_day = self.date_list[-1]
 
     def encode(self):
         return json.dumps(self.__dict__)
@@ -75,7 +75,8 @@ class Asset:
 class Portfolio:
 
     def __init__(self, start_cash):
-        self.cash = float(start_cash)
+        self.start_cash = float(start_cash)
+        self.cash = self.start_cash
         self.asset_amounts = {'Microsoft': [0, []], 'Apple': [0, []], 'Tesla': [0, []], 'Bitcoin': [0, []], 'Ethereum': [0, []],
                              'Monero': [0, []], 'Gold': [0, []], 'Coal': [0, []], 'Brent': [0, []]}
 

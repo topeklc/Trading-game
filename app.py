@@ -75,7 +75,15 @@ def another_day():
     for k, v in json.loads(session['portfolio']).items():
         setattr(portfolio, k, v)
     user = session['user']
-    game.next_day()
+    if request.form['action'] == 'Next Day':
+        game.next_day(1)
+    elif request.form['action'] == 'Skip 7 Days':
+        game.next_day(7)
+    elif request.form['action'] == 'Skip 30 Days':
+        game.next_day(30)
+    if game.current_day == game.date_list[-1]:
+        return scores()
+
     now = game.current_day
     weekday = game.current_weekday
     assets_dict = {}
@@ -153,6 +161,19 @@ def up_portfolio():
     session['portfolio'] = portfolio.encode()
     return render_template('started_game.html', cash=portfolio.cash,
                             now=now, zipped=zipped, assets_dict=assets_dict, portfolio=portfolio.asset_amounts, weekday=weekday, user=user, transactions_history=transactions_history, error=error, entire_value=entire_value)
+
+
+@app.route('/stats')
+def scores():
+    game = Game(2017)
+    portfolio = Portfolio(0)
+    for k, v in json.loads(session['game']).items():
+        setattr(game, k, v)
+    for k, v in json.loads(session['portfolio']).items():
+        setattr(portfolio, k, v)
+    entire_value = portfolio.entire_portfolio_value(game)
+    roi = entire_value / portfolio.start_cash * 100
+    return render_template('stats.html', entire_value=entire_value, roi=roi)
 
 
 if __name__ == '__main__':
