@@ -39,3 +39,6 @@ Flask-Session==0.4
 # redis
 redis==3.5.3
 
+# plotly
+plotly
+

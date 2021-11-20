@@ -5,6 +5,8 @@ import secrets
 from flask_session import Session
 import redis
 import pandas as pd
+import plotly
+import plotly.express as px
 
 app = Flask(__name__)
 SESSION_TYPE = 'redis'
@@ -34,6 +36,8 @@ def game_start():
     session['user'] = request.form['user']
     user = session['user']
     game = Game(starting_year)
+    session['entire_values_lst'] = []
+    session['date_lst'] = []
     portfolio = Portfolio(starting_cash)
     session['game'] = game.encode()
     session['portfolio'] = portfolio.encode()
@@ -76,15 +80,27 @@ def another_day():
     for k, v in json.loads(session['portfolio']).items():
         setattr(portfolio, k, v)
     user = session['user']
+    entire_values_lst = session['entire_values_lst']
+    date_lst = session['date_lst']
     if request.form['action'] == 'Next Day':
         game.next_day(1)
+        entire_values_lst.append(portfolio.entire_portfolio_value(game))
+        date_lst.append(game.current_day)
     elif request.form['action'] == 'Skip 7 Days':
-        game.next_day(7)
+        for i in range(7):
+            game.next_day(1)
+            entire_values_lst.append(portfolio.entire_portfolio_value(game))
+            date_lst.append(game.current_day)
     elif request.form['action'] == 'Skip 30 Days':
-        game.next_day(30)
+        for i in range(30):
+            game.next_day(1)
+            entire_values_lst.append(portfolio.entire_portfolio_value(game))
+            date_lst.append(game.current_day)
+
     if game.current_day == game.date_list[-1]:
         return scores()
 
+    print(entire_values_lst)
     now = game.current_day
     weekday = game.current_weekday
     assets_dict = {}
@@ -100,13 +116,17 @@ def another_day():
     entire_value = portfolio.entire_portfolio_value(game)
     zipped = zip(assets_dict, forms)
     # chart of wallet value
-
-
+    df = pd.DataFrame(dict(
+        Date=date_lst,
+        Value=entire_values_lst
+    ))
+    fig = px.line(df, x="Date", y="Value", title="Entire value chart", width=450, height=250)
+    value_graph = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
 
     session['game'] = game.encode()
     session['portfolio'] = portfolio.encode()
     return render_template('started_game.html', cash=portfolio.cash,
-                            now=now, zipped=zipped, assets_dict=assets_dict, portfolio=portfolio.asset_amounts, weekday=weekday, user=user, transactions_history=transactions_history, entire_value=entire_value)
+                            now=now, zipped=zipped, assets_dict=assets_dict, portfolio=portfolio.asset_amounts, weekday=weekday, user=user, transactions_history=transactions_history, entire_value=entire_value, value_graph=value_graph)
 
 
 @app.route('/up', methods=['POST', 'GET'])
@@ -119,6 +139,8 @@ def up_portfolio():
         setattr(portfolio, k, v)
     error = ''
     user = session['user']
+    entire_values_lst = session['entire_values_lst']
+    date_lst = session['date_lst']
     now = game.current_day
     weekday = game.current_weekday
     amount = 0
@@ -148,7 +170,13 @@ def up_portfolio():
                 portfolio.sell_asset(amount, globals()[j.split('-')[0].lower()], game)
                 error = ""
 
-
+    # chart of wallet value
+    df = pd.DataFrame(dict(
+        Date=date_lst,
+        Value=entire_values_lst
+    ))
+    fig = px.line(df, x="Date", y="Value", title="Entire value chart", width=450, height=250)
+    value_graph = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
 
     assets_dict = {}
     forms = []
@@ -165,7 +193,7 @@ def up_portfolio():
     session['game'] = game.encode()
     session['portfolio'] = portfolio.encode()
     return render_template('started_game.html', cash=portfolio.cash,
-                            now=now, zipped=zipped, assets_dict=assets_dict, portfolio=portfolio.asset_amounts, weekday=weekday, user=user, transactions_history=transactions_history, error=error, entire_value=entire_value)
+                            now=now, zipped=zipped, assets_dict=assets_dict, portfolio=portfolio.asset_amounts, weekday=weekday, user=user, transactions_history=transactions_history, error=error, entire_value=entire_value, value_graph=value_graph)
 
 
 @app.route('/stats')

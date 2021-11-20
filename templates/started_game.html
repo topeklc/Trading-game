@@ -22,7 +22,13 @@
 <div class="row">
     <div class="col">
     <aside><fieldset>
-    <legend>Portfolio</legend>
+        <div id='chart' class='chart'></div>
+    <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+<script type='text/javascript'>
+  var graphs = {{value_graph | safe}};
+  Plotly.plot('chart',graphs,{});
+</script>
+        <legend>Portfolio</legend>
     Your cash: {{'%0.2f'|format(cash|float)}} USD<br>
     Entire value of your wallet: {{'%0.2f'|format(entire_value|float)}} USD<br>
         <div align="left">Your assets:</div>
@@ -112,5 +118,7 @@ width: 100px;
   padding: 1em;
 
 }
+
+
 
 </style>

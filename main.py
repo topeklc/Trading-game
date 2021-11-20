@@ -106,17 +106,28 @@ class Portfolio:
     def entire_portfolio_value(self, game):
         self.entire_value = self.cash
         for asset, amount in self.asset_amounts.items():
-            print(asset)
             try:
                 self.entire_value += (game.get_asset_price(globals()[asset.lower()], game.current_day) * amount[0] / 10)
             except KeyError:
-                 try:
+                if game.day == 0 or game.day == 1:
+                    break
+                try:
+                    self.entire_value += (game.get_asset_price(globals()[asset.lower()], game.date_list[game.day - 1]) * amount[0] / 10)
+                except IndexError:
+                    break
+                except KeyError:
                     try:
-                        self.entire_value += (game.get_asset_price(globals()[asset.lower()], game.date_list[game.day - 1]) * amount[0] / 10)
-                    except KeyError:
                         self.entire_value += (game.get_asset_price(globals()[asset.lower()], game.date_list[game.day - 2]) * amount[0] / 10)
-                 except:
-                        pass
+                    except KeyError:
+                        try:
+                            self.entire_value += (
+                                    game.get_asset_price(globals()[asset.lower()], game.date_list[game.day - 3]) *
+                                    amount[0] / 10)
+                        except KeyError:
+                            self.entire_value += (
+                                    game.get_asset_price(globals()[asset.lower()], game.date_list[game.day - 4]) *
+                                    amount[0] / 10)
+
         self.entire_value_lst.append(self.entire_value)
         return self.entire_value
 
