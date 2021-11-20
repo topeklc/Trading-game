@@ -4,6 +4,7 @@ from forms import ActionForm
 import secrets
 from flask_session import Session
 import redis
+import pandas as pd
 
 app = Flask(__name__)
 SESSION_TYPE = 'redis'
@@ -48,7 +49,7 @@ def game_start():
     forms = []
     for asset in assets_list:
         try:
-            assets_dict[asset.name] = game.get_asset_price(asset)
+            assets_dict[asset.name] = game.get_asset_price(asset, game.current_day)
             form = ActionForm(request.form, prefix=asset.name)
             forms.append(form)
         except KeyError:
@@ -90,7 +91,7 @@ def another_day():
     forms = []
     for asset in assets_list:
         try:
-            assets_dict[asset.name] = game.get_asset_price(asset)
+            assets_dict[asset.name] = game.get_asset_price(asset, game.current_day)
             form = ActionForm(request.form, prefix=asset.name)
             forms.append(form)
         except KeyError:
@@ -98,6 +99,10 @@ def another_day():
     transactions_history = portfolio.transactions_history[-1:-11:-1]
     entire_value = portfolio.entire_portfolio_value(game)
     zipped = zip(assets_dict, forms)
+    # chart of wallet value
+
+
+
     session['game'] = game.encode()
     session['portfolio'] = portfolio.encode()
     return render_template('started_game.html', cash=portfolio.cash,
@@ -127,7 +132,7 @@ def up_portfolio():
         elif i == 1:
             if j.split('-')[1] == 'buy':
                 portfolio.buy_asset(amount, globals()[j.split('-')[0].lower()], game)
-                if portfolio.cash < amount * game.get_asset_price(globals()[j.split('-')[0].lower()]):
+                if portfolio.cash < amount * game.get_asset_price(globals()[j.split('-')[0].lower()], game.current_day):
                     error = 'Not enough cash!'
             elif j.split('-')[1] == 'sell':
                 if portfolio.asset_amounts[j.split('-')[0]][0] / 10 < amount:
@@ -135,7 +140,7 @@ def up_portfolio():
                     error = f'Not enough {asset}!'
                 portfolio.sell_asset(amount, globals()[j.split('-')[0].lower()], game)
             elif j.split('-')[1] == 'buyall':
-                amount = round(portfolio.cash / game.get_asset_price(globals()[j.split('-')[0].lower()]) - 0.05, 1)
+                amount = round(portfolio.cash / game.get_asset_price(globals()[j.split('-')[0].lower()], game.current_day) - 0.05, 1)
                 portfolio.buy_asset(amount, globals()[j.split('-')[0].lower()], game)
                 error = ""
             elif j.split('-')[1] == 'sellall':
@@ -149,7 +154,7 @@ def up_portfolio():
     forms = []
     for asset in assets_list:
         try:
-            assets_dict[asset.name] = game.get_asset_price(asset)
+            assets_dict[asset.name] = game.get_asset_price(asset, game.current_day)
             form = ActionForm(request.form, prefix=asset.name)
             forms.append(form)
         except KeyError:

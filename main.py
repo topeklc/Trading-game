@@ -46,8 +46,8 @@ class Game:
         price = float("%.2f" % asset.history.loc[self.current_day]['Close'])
         return f"{asset.name} = {price} USD"
 
-    def get_asset_price(self, asset):
-        price = float("%.2f" % asset.history.loc[self.current_day]['Close'])
+    def get_asset_price(self, asset, current_day):
+        price = float("%.2f" % asset.history.loc[current_day]['Close'])
         return price
 
     def next_day(self, days):
@@ -82,35 +82,43 @@ class Portfolio:
 
         self.transactions_history = []
         self.entire_value = 0
+        self.entire_value_lst = []
 
     def buy_asset(self, amount, asset, game):
         amount = int(amount * 10)
-        if float(self.cash) >= (game.get_asset_price(asset) / 10 * amount):
+        if float(self.cash) >= (game.get_asset_price(asset, game.current_day) / 10 * amount):
             self.asset_amounts[asset.name][0] += amount
-            self.cash = self.cash - game.get_asset_price(asset) / 10 * amount
+            self.cash = self.cash - game.get_asset_price(asset, game.current_day) / 10 * amount
             if amount != 0:
-                self.transactions_history.append(f'{game.current_day} BUY {amount / 10} {asset.name} at price {game.get_asset_price(asset)} USD, for {round(game.get_asset_price(asset) * amount / 10, 2)} USD')
-            self.asset_amounts[asset.name][1].append(game.get_asset_price(asset) / 10 * amount)
+                self.transactions_history.append(f'{game.current_day} BUY {amount / 10} {asset.name} at price {game.get_asset_price(asset, game.current_day)} USD, for {round(game.get_asset_price(asset, game.current_day) * amount / 10, 2)} USD')
+            self.asset_amounts[asset.name][1].append(game.get_asset_price(asset, game.current_day) / 10 * amount)
 
     def sell_asset(self, amount, asset, game):
         amount = int(amount * 10)
         if self.asset_amounts[asset.name][0] >= amount:
             self.asset_amounts[asset.name][0] -= amount
-            self.cash = self.cash + game.get_asset_price(asset) / 10 * amount
+            self.cash = self.cash + game.get_asset_price(asset, game.current_day) / 10 * amount
             if amount != 0:
-                self.transactions_history.append(f'{game.current_day} SELL {amount / 10} {asset.name} at price {game.get_asset_price(asset)} USD, for {round(game.get_asset_price(asset) * amount / 10, 2)} USD')
+                self.transactions_history.append(f'{game.current_day} SELL {amount / 10} {asset.name} at price {game.get_asset_price(asset, game.current_day)} USD, for {round(game.get_asset_price(asset, game.current_day) * amount / 10, 2)} USD')
             if self.asset_amounts[asset.name][0] == 0:
                 self.asset_amounts[asset.name][1].clear()
 
     def entire_portfolio_value(self, game):
         self.entire_value = self.cash
         for asset, amount in self.asset_amounts.items():
+            print(asset)
             try:
-                self.entire_value += (game.get_asset_price(globals()[asset.lower()]) * amount[0] / 10)
+                self.entire_value += (game.get_asset_price(globals()[asset.lower()], game.current_day) * amount[0] / 10)
             except KeyError:
-                pass
+                 try:
+                    try:
+                        self.entire_value += (game.get_asset_price(globals()[asset.lower()], game.date_list[game.day - 1]) * amount[0] / 10)
+                    except KeyError:
+                        self.entire_value += (game.get_asset_price(globals()[asset.lower()], game.date_list[game.day - 2]) * amount[0] / 10)
+                 except:
+                        pass
+        self.entire_value_lst.append(self.entire_value)
         return self.entire_value
-
 
 
     def encode(self):
