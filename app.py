@@ -83,19 +83,31 @@ def another_day():
     entire_values_lst = session['entire_values_lst']
     date_lst = session['date_lst']
     if request.form['action'] == 'Next Day':
-        game.next_day(1)
         entire_values_lst.append(portfolio.entire_portfolio_value(game))
         date_lst.append(game.current_day)
+        game.next_day(1)
     elif request.form['action'] == 'Skip 7 Days':
-        for i in range(7):
-            game.next_day(1)
-            entire_values_lst.append(portfolio.entire_portfolio_value(game))
-            date_lst.append(game.current_day)
+        if len(game.date_list) - game.day >= 7:
+            for i in range(7):
+                entire_values_lst.append(portfolio.entire_portfolio_value(game))
+                date_lst.append(game.current_day)
+                game.next_day(1)
+        else:
+            for i in range(len(game.date_list) - game.day):
+                entire_values_lst.append(portfolio.entire_portfolio_value(game))
+                date_lst.append(game.current_day)
+                game.next_day(1)
     elif request.form['action'] == 'Skip 30 Days':
-        for i in range(30):
-            game.next_day(1)
-            entire_values_lst.append(portfolio.entire_portfolio_value(game))
-            date_lst.append(game.current_day)
+        if len(game.date_list) - game.day >= 30:
+            for i in range(30):
+                entire_values_lst.append(portfolio.entire_portfolio_value(game))
+                date_lst.append(game.current_day)
+                game.next_day(1)
+        else:
+            for i in range(len(game.date_list) - game.day):
+                entire_values_lst.append(portfolio.entire_portfolio_value(game))
+                date_lst.append(game.current_day)
+                game.next_day(1)
 
     if game.current_day == game.date_list[-1]:
         return scores()
@@ -204,9 +216,19 @@ def scores():
         setattr(game, k, v)
     for k, v in json.loads(session['portfolio']).items():
         setattr(portfolio, k, v)
-    entire_value = portfolio.entire_portfolio_value(game)
+    entire_values_lst = session['entire_values_lst']
+    date_lst = session['date_lst']
+    entire_value = entire_values_lst[-1]
     roi = entire_value / portfolio.start_cash * 100
-    return render_template('stats.html', entire_value=entire_value, roi=roi)
+    # chart of wallet value
+    df = pd.DataFrame(dict(
+        Date=date_lst,
+        Value=entire_values_lst
+    ))
+    fig = px.line(df, x="Date", y="Value", title="Entire value chart", width=600, height=350)
+    value_graph = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
+    print(entire_values_lst)
+    return render_template('stats.html', entire_value=entire_value, roi=roi, value_graph=value_graph)
 
 
 if __name__ == '__main__':

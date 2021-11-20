@@ -9,6 +9,12 @@
 <br>
 <br>
 <center>
+    <div id='chart' class='chart'></div>
+    <script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+<script type='text/javascript'>
+  var graphs = {{value_graph | safe}};
+  Plotly.plot('chart',graphs,{});
+</script>
     <fieldset>
    <legend>Your stats</legend>
     Your entire value of wallet: {{ '%0.2f'|format(entire_value|float) }}USD<br>Your ROI(return of investment): {{ '%0.2f'|format(roi|float) }}%
