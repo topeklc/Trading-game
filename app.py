@@ -10,7 +10,7 @@ import plotly.express as px
 
 app = Flask(__name__)
 SESSION_TYPE = 'redis'
-app.config['SESSION_REDIS'] = redis.from_url('rediss://:p2e661a327d81ceefd509b9be48dba1219de231ad5652a73110c699ce798dd0a3@ec2-54-77-242-13.eu-west-1.compute.amazonaws.com:11730', ssl_cert_reqs=None)
+app.config['SESSION_REDIS'] = redis.from_url('rediss://:p2e661a327d81ceefd509b9be48dba1219de231ad5652a73110c699ce798dd0a3@ec2-34-246-212-176.eu-west-1.compute.amazonaws.com:11040', ssl_cert_reqs=None)
 secret = secrets.token_urlsafe(32)
 app.secret_key = secret
 app.config.from_object(__name__)
