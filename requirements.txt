@@ -42,3 +42,5 @@ redis==3.5.3
 # plotly
 plotly
 
+# dotenv
+python-dotenv

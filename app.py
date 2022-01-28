@@ -7,10 +7,14 @@ import redis
 import pandas as pd
 import plotly
 import plotly.express as px
+import os
+from dotenv import load_dotenv
+load_dotenv()
 
+redis_url = os.getenv('REDIS_URL')
 app = Flask(__name__)
 SESSION_TYPE = 'redis'
-app.config['SESSION_REDIS'] = redis.from_url('rediss://:p2e661a327d81ceefd509b9be48dba1219de231ad5652a73110c699ce798dd0a3@ec2-34-246-212-176.eu-west-1.compute.amazonaws.com:11040', ssl_cert_reqs=None)
+app.config['SESSION_REDIS'] = redis.from_url(redis_url, ssl_cert_reqs=None)
 secret = secrets.token_urlsafe(32)
 app.secret_key = secret
 app.config.from_object(__name__)
@@ -20,17 +24,21 @@ sess = Session(app)
 
 @app.route('/')
 def mainpage():
+    """Function rendering main page (Settings)."""
     return render_template('main.html')
 
 
 @app.route('/', methods=['POST', 'GET'])
 def start_game():
+    """Function starting game with chosen settings."""
     if request.method == 'POST':
         return redirect(url_for('started'))
 
 
 @app.route('/started', methods=['POST', 'GET'])
 def game_start():
+    """Function called when user decide to start game.
+    Initializing REDIS variables and creating needed objects."""
     starting_cash = request.form['smoney']
     starting_year = request.form['year']
     session['user'] = request.form['user']
@@ -38,11 +46,17 @@ def game_start():
     game = Game(starting_year)
     session['entire_values_lst'] = []
     session['date_lst'] = []
+    entire_values_lst = session['entire_values_lst']
+    date_lst = session['date_lst']
     portfolio = Portfolio(starting_cash)
+    # Passing game object to cache
     session['game'] = game.encode()
+    # Passing portfolio object to cache
     session['portfolio'] = portfolio.encode()
+    # Loading game object from Redis cache
     for k, v in json.loads(session['game']).items():
         setattr(game, k, v)
+    # Loading portfolio object from Redis cache
     for k, v in json.loads(session['portfolio']).items():
         setattr(portfolio, k, v)
     now = game.current_day
@@ -51,6 +65,7 @@ def game_start():
     entire_value = portfolio.entire_portfolio_value(game)
     assets_dict = {}
     forms = []
+    # Creating list of forms for available assets
     for asset in assets_list:
         try:
             assets_dict[asset.name] = game.get_asset_price(asset, game.current_day)
@@ -59,33 +74,39 @@ def game_start():
         except KeyError:
             print(asset.name)
             pass
-    print(assets_dict)
     zipped = zip(assets_dict, forms)
+    # Chart
+    df = pd.DataFrame(dict(
+        Date=date_lst,
+        Value=entire_values_lst))
+    fig = px.line(df, x="Date", y="Value", title="Entire value chart", width=450, height=250)
+    value_graph = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
     return render_template('started_game.html', cash=portfolio.cash,
-                           starting_year=starting_year, now=now, zipped=zipped, assets_dict=assets_dict, portfolio=portfolio_statement, weekday=weekday, user=user, entire_value=entire_value)
-
-
-@app.route('/started', methods=['POST', 'GET'])
-def next_day():
-    if request.form['action'] == 'Next Day':
-        return redirect(url_for('day'))
+                           starting_year=starting_year, now=now, zipped=zipped,
+                           assets_dict=assets_dict, portfolio=portfolio_statement,
+                           weekday=weekday, user=user, entire_value=entire_value, value_graph=value_graph)
 
 
 @app.route('/day', methods=['POST', 'GET'])
 def another_day():
-    game = Game(2017)
-    portfolio = Portfolio(0)
+    """Function called when user want to go to another day"""
+    game = Game()
+    portfolio = Portfolio()
+    # Loading game object from Redis cache
     for k, v in json.loads(session['game']).items():
         setattr(game, k, v)
+    # Loading portfolio object from Redis cache
     for k, v in json.loads(session['portfolio']).items():
         setattr(portfolio, k, v)
     user = session['user']
     entire_values_lst = session['entire_values_lst']
     date_lst = session['date_lst']
+    # Go to next day
     if request.form['action'] == 'Next Day':
         entire_values_lst.append(portfolio.entire_portfolio_value(game))
         date_lst.append(game.current_day)
         game.next_day(1)
+    # Skip 7 days
     elif request.form['action'] == 'Skip 7 Days':
         if len(game.date_list) - game.day >= 7:
             for i in range(7):
@@ -97,6 +118,7 @@ def another_day():
                 entire_values_lst.append(portfolio.entire_portfolio_value(game))
                 date_lst.append(game.current_day)
                 game.next_day(1)
+    # Skip a month
     elif request.form['action'] == 'Skip 30 Days':
         if len(game.date_list) - game.day >= 30:
             for i in range(30):
@@ -108,15 +130,15 @@ def another_day():
                 entire_values_lst.append(portfolio.entire_portfolio_value(game))
                 date_lst.append(game.current_day)
                 game.next_day(1)
-
+    # Check if current_day is not last possible day.
+    # If it is render score view
     if game.current_day == game.date_list[-1]:
         return scores()
-
-    print(entire_values_lst)
     now = game.current_day
     weekday = game.current_weekday
     assets_dict = {}
     forms = []
+    # Creating list of forms for available assets
     for asset in assets_list:
         try:
             assets_dict[asset.name] = game.get_asset_price(asset, game.current_day)
@@ -127,26 +149,32 @@ def another_day():
     transactions_history = portfolio.transactions_history[-1:-11:-1]
     entire_value = portfolio.entire_portfolio_value(game)
     zipped = zip(assets_dict, forms)
-    # chart of wallet value
+    # Chart
     df = pd.DataFrame(dict(
         Date=date_lst,
         Value=entire_values_lst
     ))
     fig = px.line(df, x="Date", y="Value", title="Entire value chart", width=450, height=250)
     value_graph = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
-
+    # Passing game object to cache
     session['game'] = game.encode()
+    # Passing portfolio object to cache
     session['portfolio'] = portfolio.encode()
-    return render_template('started_game.html', cash=portfolio.cash,
-                            now=now, zipped=zipped, assets_dict=assets_dict, portfolio=portfolio.asset_amounts, weekday=weekday, user=user, transactions_history=transactions_history, entire_value=entire_value, value_graph=value_graph)
+    return render_template('started_game.html', cash=portfolio.cash, now=now,
+                           zipped=zipped, assets_dict=assets_dict, portfolio=portfolio.asset_amounts,
+                           weekday=weekday, user=user, transactions_history=transactions_history,
+                           entire_value=entire_value, value_graph=value_graph)
 
 
 @app.route('/up', methods=['POST', 'GET'])
 def up_portfolio():
-    game = Game(2017)
-    portfolio = Portfolio(0)
+    """Function called when user want to buy or sell asset"""
+    game = Game()
+    portfolio = Portfolio()
+    # Loading game object from Redis cache
     for k, v in json.loads(session['game']).items():
         setattr(game, k, v)
+    # Loading portfolio object from Redis cache
     for k, v in json.loads(session['portfolio']).items():
         setattr(portfolio, k, v)
     error = ''
@@ -156,6 +184,7 @@ def up_portfolio():
     now = game.current_day
     weekday = game.current_weekday
     amount = 0
+    # Loop checking what action user decide to use (buy, sell, buy with all, sell with all,)
     for i, j in enumerate(request.args):
         if i == 0:
             try:
@@ -181,17 +210,16 @@ def up_portfolio():
                 amount = portfolio.asset_amounts[j.split('-')[0]][0] / 10
                 portfolio.sell_asset(amount, globals()[j.split('-')[0].lower()], game)
                 error = ""
-
-    # chart of wallet value
+    # Chart
     df = pd.DataFrame(dict(
         Date=date_lst,
-        Value=entire_values_lst
-    ))
+        Value=entire_values_lst))
     fig = px.line(df, x="Date", y="Value", title="Entire value chart", width=450, height=250)
     value_graph = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
 
     assets_dict = {}
     forms = []
+    # Creating list of forms for available assets
     for asset in assets_list:
         try:
             assets_dict[asset.name] = game.get_asset_price(asset, game.current_day)
@@ -202,7 +230,9 @@ def up_portfolio():
     transactions_history = portfolio.transactions_history[-1:-11:-1]
     entire_value = portfolio.entire_portfolio_value(game)
     zipped = zip(assets_dict, forms)
+    # Passing game object to cache
     session['game'] = game.encode()
+    # Passing portfolio object to cache
     session['portfolio'] = portfolio.encode()
     return render_template('started_game.html', cash=portfolio.cash,
                             now=now, zipped=zipped, assets_dict=assets_dict, portfolio=portfolio.asset_amounts, weekday=weekday, user=user, transactions_history=transactions_history, error=error, entire_value=entire_value, value_graph=value_graph)
@@ -210,16 +240,20 @@ def up_portfolio():
 
 @app.route('/stats')
 def scores():
-    game = Game(2017)
-    portfolio = Portfolio(0)
+    """Function called when current day = last day.
+    Rendering score view."""
+    game = Game()
+    portfolio = Portfolio()
+    # Loading game object from Redis cache
     for k, v in json.loads(session['game']).items():
         setattr(game, k, v)
+    # Loading portfolio object from Redis cache
     for k, v in json.loads(session['portfolio']).items():
         setattr(portfolio, k, v)
     entire_values_lst = session['entire_values_lst']
     date_lst = session['date_lst']
     entire_value = entire_values_lst[-1]
-    roi = entire_value / portfolio.start_cash * 100
+    roi = (entire_value / portfolio.start_cash * 100) / 100
     # chart of wallet value
     df = pd.DataFrame(dict(
         Date=date_lst,
