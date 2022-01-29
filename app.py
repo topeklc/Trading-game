@@ -1,6 +1,8 @@
-from flask import Flask, request, render_template, redirect, url_for, session
+from flask import Flask, request, render_template, redirect, url_for, session, flash
+from flask_login import LoginManager, login_user, current_user, logout_user, login_required
+from flask_bcrypt import Bcrypt
+from flask_sqlalchemy import SQLAlchemy
 from main import *
-from forms import ActionForm
 import secrets
 from flask_session import Session
 import redis
@@ -13,20 +15,59 @@ load_dotenv()
 
 redis_url = os.getenv('REDIS_URL')
 app = Flask(__name__)
+secret_db = secrets.token_urlsafe(32)
 SESSION_TYPE = 'redis'
 app.config['SESSION_REDIS'] = redis.from_url(redis_url, ssl_cert_reqs=None)
+app.config['SECRET_KEY'] = secret_db
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
+db = SQLAlchemy(app)
+bcrypt = Bcrypt(app)
 secret = secrets.token_urlsafe(32)
 app.secret_key = secret
 app.config.from_object(__name__)
 sess = Session(app)
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = 'login'
 
-
+from forms import ActionForm, RegistrationForm, LoginForm
+from models import User
 
 @app.route('/')
 def mainpage():
     """Function rendering main page (Settings)."""
     return render_template('main.html')
 
+@app.route('/signup', methods=['POST', 'GET'])
+def signup():
+    """Function pass data to database and rendering sign up page."""
+    if current_user.is_authenticated:
+        return redirect(url_for('/'))
+    form = RegistrationForm()
+    if form.validate_on_submit():
+        hashed_pwd = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        user = User(username=form.username.data, email=form.email.data, password=hashed_pwd)
+        db.session.add(user)
+        db.session.commit()
+        flash('Your account has been created! You are now able to log in', 'success')
+        return redirect(url_for('login'))
+    return render_template('signup.html', form=form)
+
+@app.route('/login', methods=['POST', 'GET'])
+def login():
+    """Function check if login data provided
+    by user exist in database and rendering login page."""
+    if current_user.is_authenticated():
+        return redirect(url_for('/'))
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(email=form.email.data).first()
+        if user and bcrypt.check_password_hash(user.password, form.password.data):
+            login_user(user, remember=form.remember.data)
+            return redirect('/')
+        else:
+            flash('Login Unsuccessful.')
+    return render_template('login.html', form=form)
 
 @app.route('/', methods=['POST', 'GET'])
 def start_game():
