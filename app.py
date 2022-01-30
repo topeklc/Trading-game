@@ -294,7 +294,7 @@ def scores():
     entire_values_lst = session['entire_values_lst']
     date_lst = session['date_lst']
     entire_value = entire_values_lst[-1]
-    roi = (entire_value / portfolio.start_cash * 100) / 100
+    roi = (entire_value - portfolio.start_cash) / portfolio.start_cash * 100
     # chart of wallet value
     df = pd.DataFrame(dict(
         Date=date_lst,
