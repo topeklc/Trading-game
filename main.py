@@ -29,8 +29,8 @@ class Game:
         self.day = 0
         self.current_day = self.date_list[self.day]
         self.current_weekday = datetime.datetime.strptime(self.current_day, '%Y-%m-%d').strftime('%A')
-
-    def get_asset_price(self, asset, current_day):
+    @staticmethod
+    def get_asset_price(asset, current_day):
         """Getting asset price"""
         price = float("%.2f" % asset.history.loc[current_day]['Close'])
         return price
