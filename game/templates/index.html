@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static',filename='styles/style.css') }}">
+    <title>Trading Game</title>
+</head>
+<body>
+<h1>Trading Game</h1>
+<br>
+<br>
+<center>
+    <fieldset>
+   <legend>Main Menu</legend>
+        <div><form method="POST" action="settings"><input type="submit" name="guest" value="Start as guest"></form></div>
+        <div><form method="POST" action="login"><input type="submit" name="login" value="Login"></form></div>
+        <div><form method="POST" action="signup"><input type="submit" name="signup" value="Signup"></form></div>
+    </fieldset>
+</center>
+</body>
+</html>
+

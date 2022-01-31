@@ -1,0 +1,50 @@
+
+body {
+  font-family: "Times New Roman", Times, serif;
+  background-color: darkgray;
+}
+
+h1 {
+  width:500px;
+  margin: 0 auto;
+  text-align: center;
+
+}
+
+
+label {
+  width:500px;
+  margin: 0 auto;
+  text-align: center;
+  border: 5px;
+}
+input {
+  max-width: 100px;
+  width: fit-content;
+  text-align: center;
+
+}
+
+fieldset {
+  font-family: "Times New Roman", Times, serif;
+  text-align: center;
+  width:450px;
+
+}
+
+.next {
+height: 50px;
+width: 100px;
+}
+
+
+.row {
+  display: flex;
+}
+
+.col {
+  flex: 1;
+
+  padding: 1em;
+
+}

@@ -1,5 +1,9 @@
-from app import db, login_manager
-from flask_login import UserMixin
+from game.__init__ import db, app
+from flask_login import UserMixin, LoginManager
+
+
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
 
 
 

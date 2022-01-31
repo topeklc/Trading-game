@@ -1,7 +1,7 @@
 from flask_wtf import FlaskForm
 from wtforms import FloatField, SubmitField, StringField, BooleanField, PasswordField, validators, ValidationError
 from wtforms.widgets import html5 as h5widgets
-from models import User
+from game.models import User
 
 
 class ActionForm(FlaskForm):
@@ -18,7 +18,7 @@ class RegistrationForm(FlaskForm):
     password = PasswordField('New Password', [validators.DataRequired()])
     confirm = PasswordField('Repeat Password', [validators.DataRequired(),
                                                 validators.EqualTo('confirm', message='Password must match')])
-    accept_policy = BooleanField('I accept Privacy policy!')
+    accept_policy = BooleanField('Privacy policy')
     submit = SubmitField('Sign Up')
 
     def validate_username(self, username):
