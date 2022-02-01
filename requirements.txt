@@ -44,3 +44,6 @@ plotly
 
 # dotenv
 python-dotenv
+
+# email_validator
+email-validator==1.1.3
