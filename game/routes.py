@@ -25,7 +25,6 @@ def signup():
         return redirect(url_for('settings'))
     form = RegistrationForm()
     if form.validate_on_submit():
-        print(form.accept_policy.data)
         hashed_pwd = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
         user = User(username=form.username.data, email=form.email.data, password=hashed_pwd, best_score=0)
         db.session.add(user)

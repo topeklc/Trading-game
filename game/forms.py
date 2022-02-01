@@ -35,9 +35,9 @@ class RegistrationForm(FlaskForm):
         if not accept_policy:
             raise ValidationError("You have to accept policy!")
 
-    def validate_password(self, password):
-        if password != self.confirm:
-            raise ValidationError("Password must match!")
+    # def validate_password(self, password):
+    #     if password != self.confirm:
+    #         raise ValidationError("Password must match!")
 
 
 class LoginForm(FlaskForm):
