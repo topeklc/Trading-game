@@ -19,6 +19,12 @@
     <fieldset>
    <legend>Your stats</legend>
     Your entire value of wallet: {{ '%0.2f'|format(entire_value|float) }}USD<br>Your ROI(return of investment): {{ '%0.2f'|format(roi|float) }}%
+        <div>{% with messages = get_flashed_messages() %}
+    {% if messages %}
+    {% for message in messages %}
+        <span>{{ message }}</span>
+    {% endfor %}
+  {% endif %} {% endwith %}</div>
 </fieldset>
 </center>
 </body>

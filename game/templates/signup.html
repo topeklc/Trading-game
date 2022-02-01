@@ -25,8 +25,10 @@
         <div>{{ form.accept_policy }}</div>
         <div>{{ form.submit }}</div>
         <div>{% with messages = get_flashed_messages() %}
-        {{ messages }} {% endwith %}</div>
-    </fieldset>
+        {% if messages %}
+        <span>{{ messages[-1] }}</span>
+        {% endif %} {% endwith %}</div>
+        </fieldset>
 </form></center>
 </body>
 </html>

@@ -4,7 +4,9 @@ import datetime
 import json
 
 
-"""Getting from yahoo.finance dataframes(price history) for all assets"""
+"""
+Getting from yahoo.finance dataframes(price history) for all assets
+"""
 # Stocks
 msft_history = yf.Ticker('MSFT').history(start='2016-12-31', end='2022-1-1')
 apple_history = yf.Ticker('AAPL').history(start='2016-12-31', end='2022-1-1')
@@ -21,7 +23,9 @@ brent_history = yf.Ticker('BZ=F').history(start='2016-12-31', end='2022-1-1')
 
 class Game:
     def __init__(self, year=2017):
-        """Initializing game main variables"""
+        """
+        Initializing game main variables
+        """
         self.start = datetime.datetime.strptime(f"{year}-01-01", "%Y-%m-%d").strftime("%d-%m-%Y")
         self.end = datetime.datetime.strptime(f"{year}-12-31", "%Y-%m-%d").strftime("%d-%m-%Y")
         self.date_list = pd.date_range(start=self.start, end=self.end)
@@ -29,14 +33,19 @@ class Game:
         self.day = 0
         self.current_day = self.date_list[self.day]
         self.current_weekday = datetime.datetime.strptime(self.current_day, '%Y-%m-%d').strftime('%A')
+
     @staticmethod
     def get_asset_price(asset, current_day):
-        """Getting asset price"""
+        """
+        Getting asset price
+        """
         price = float("%.2f" % asset.history.loc[current_day]['Close'])
         return price
 
     def next_day(self, days):
-        """Moving to other day"""
+        """
+        Moving to other day
+        """
         try:
             self.day += days
             self.current_day = self.date_list[self.day]
@@ -46,13 +55,17 @@ class Game:
             self.current_day = self.date_list[-1]
 
     def encode(self):
-        """Function helps transfer data to Redis"""
+        """
+        Function helps transfer data to Redis
+        """
         return json.dumps(self.__dict__)
 
 
 class Asset:
     def __init__(self, name, history):
-        """Create asset object with name and history dataframe."""
+        """
+        Create asset object with name and history dataframe.
+        """
         self.name = name
         self.history = history
 
@@ -73,8 +86,10 @@ class Portfolio:
         self.entire_value_lst = []
 
     def buy_asset(self, amount, asset, game):
-        """Function called when user try to buy asset.
-        Check if user has enough money to buy and update portfolio state."""
+        """
+        Function called when user try to buy asset.
+        Check if user has enough money to buy and update portfolio state.
+        """
         amount = int(amount * 10)
         if float(self.cash) >= (game.get_asset_price(asset, game.current_day) / 10 * amount):
             self.asset_amounts[asset.name][0] += amount
@@ -84,8 +99,10 @@ class Portfolio:
             self.asset_amounts[asset.name][1].append(game.get_asset_price(asset, game.current_day) / 10 * amount)
 
     def sell_asset(self, amount, asset, game):
-        """Function called when user try to sell asset.
-        Check if user has enough asset to sell and update portfolio state."""
+        """
+        Function called when user try to sell asset.
+        Check if user has enough asset to sell and update portfolio state.
+        """
         amount = int(amount * 10)
         if self.asset_amounts[asset.name][0] >= amount:
             self.asset_amounts[asset.name][0] -= amount
@@ -97,8 +114,10 @@ class Portfolio:
                 self.asset_amounts[asset.name][1].clear()
 
     def entire_portfolio_value(self, game):
-        """Function calculating whole portfolio value. Since stocks have no price feed at weekends and holidays
-         it has to check few previous days to find price of asset for portfolio value calculation."""
+        """
+        Function calculating whole portfolio value. Since stocks have no price feed at weekends and holidays
+         it has to check few previous days to find price of asset for portfolio value calculation.
+         """
         self.entire_value = self.cash
         for asset, amount in self.asset_amounts.items():
             try:
@@ -118,11 +137,15 @@ class Portfolio:
         return self.entire_value
 
     def encode(self):
-        """Function helps to pass objects to REDIS cache"""
+        """
+        Function helps to pass objects to REDIS cache
+        """
         return json.dumps(self.__dict__)
 
 
-"""Initializing Asset class objects."""
+"""
+Initializing Asset class objects.
+"""
 microsoft = Asset('Microsoft', msft_history)
 apple = Asset('Apple', apple_history)
 tesla = Asset('Tesla', tesla_history)

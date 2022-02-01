@@ -1,8 +1,8 @@
 from flask import request, render_template, redirect, url_for, session, flash
-from flask_login import login_user, current_user
+from flask_login import login_user, current_user, logout_user
 import plotly
 import plotly.express as px
-from game.forms import ActionForm, RegistrationForm, LoginForm
+from game.forms import *
 from game.models import *
 from game import app, bcrypt, db
 from game.main import *
@@ -11,28 +11,44 @@ login_manager.init_app(app)
 
 @app.route('/')
 def mainpage():
-    """Function rendering main page."""
+    """
+    Function rendering main page.
+    """
     return render_template('index.html')
 
 @app.route('/signup', methods=['POST', 'GET'])
 def signup():
-    """Function pass data to database and rendering sign up page."""
+    """
+    Function pass data to database and rendering sign up page.
+    """
     if current_user.is_authenticated:
         return redirect(url_for('settings'))
     form = RegistrationForm()
     if form.validate_on_submit():
+        print(form.accept_policy.data)
         hashed_pwd = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
-        user = User(username=form.username.data, email=form.email.data, password=hashed_pwd)
+        user = User(username=form.username.data, email=form.email.data, password=hashed_pwd, best_score=0)
         db.session.add(user)
         db.session.commit()
         flash('Your account has been created! You are now able to log in', 'success')
         return redirect(url_for('login'))
+    if form.email.data or form.username.data:
+        if User.query.filter_by(email=form.email.data).first():
+            flash('User with this email exist!')
+        elif User.query.filter_by(username=form.username.data).first():
+            flash('User with this username exist!')
+        elif not form.accept_policy.data:
+            flash('You have to accept privacy policy')
+        elif form.password.data != form.confirm.data:
+            flash('Passwords must match!')
     return render_template('signup.html', form=form)
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
-    """Function check if login data provided
-    by user exist in database and rendering login page."""
+    """
+    Function check if login data provided
+    by user exist in database and rendering login page.
+    """
     if current_user.is_authenticated:
         return redirect(url_for('settings'))
     form = LoginForm()
@@ -41,33 +57,46 @@ def login():
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
             flash('Login successful.')
-            return redirect('settings')
+            return redirect('/')
         else:
             flash('Login Unsuccessful.')
     return render_template('login.html', form=form)
 
+@app.route('/logout')
+def logout():
+    logout_user()
+    flash('You are logged out!')
+    return redirect('/')
+
+
 @app.route('/settings', methods=['POST', 'GET'])
 def settings():
-    """Function render settings page."""
-    if current_user.is_authenticated:
-        return render_template('settings-logged.html')
-    else:
-        return render_template('settings.html')
+    """
+    Function render settings page.
+    """
+    return render_template('settings.html')
 
 @app.route('/settings', methods=['POST', 'GET'])
 def start_game():
-    """Function starting game with chosen settings."""
+    """
+    Function starting game with chosen settings.
+    """
     if request.method == 'POST':
         return redirect(url_for('started'))
 
 
 @app.route('/started', methods=['POST', 'GET'])
 def game_start():
-    """Function called when user decide to start game.
-    Initializing REDIS variables and creating needed objects."""
+    """
+    Function called when user decide to start game.
+    Initializing REDIS variables and creating needed objects.
+    """
     starting_cash = request.form['smoney']
     starting_year = request.form['year']
-    session['user'] = request.form['user']
+    if current_user.is_authenticated:
+        session['user'] = current_user.username
+    else:
+        session['user'] = request.form['user']
     user = session['user']
     game = Game(starting_year)
     session['entire_values_lst'] = []
@@ -115,7 +144,9 @@ def game_start():
 
 @app.route('/day', methods=['POST', 'GET'])
 def another_day():
-    """Function called when user want to go to another day"""
+    """
+    Function called when user want to go to another day
+    """
     game = Game()
     portfolio = Portfolio()
     # Loading game object from Redis cache
@@ -194,7 +225,9 @@ def another_day():
 
 @app.route('/up', methods=['POST', 'GET'])
 def up_portfolio():
-    """Function called when user want to buy or sell asset"""
+    """
+    Function called when user want to buy or sell asset
+    """
     game = Game()
     portfolio = Portfolio()
     # Loading game object from Redis cache
@@ -266,8 +299,10 @@ def up_portfolio():
 
 @app.route('/stats')
 def scores():
-    """Function called when current day = last day.
-    Rendering score view."""
+    """
+    Function called when current day = last day.
+    Rendering score view and if it's the best score add it to database.
+    """
     game = Game()
     portfolio = Portfolio()
     # Loading game object from Redis cache
@@ -280,6 +315,15 @@ def scores():
     date_lst = session['date_lst']
     entire_value = entire_values_lst[-1]
     roi = (entire_value - portfolio.start_cash) / portfolio.start_cash * 100
+    if current_user.is_authenticated:
+        if roi > int(current_user.best_score):
+            current_user.best_score = int(roi)
+            db.session.merge(current_user)
+            db.session.commit()
+            flash("It's your best score!")
+        else:
+            flash(f"That's not your best score. Your best score is {current_user.best_score} %")
+
     # chart of wallet value
     df = pd.DataFrame(dict(
         Date=date_lst,

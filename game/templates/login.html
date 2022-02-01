@@ -11,7 +11,7 @@
 <br>
 <center><form method="POST">
     <fieldset>
-   <legend>Sign Up</legend>
+   <legend>Login</legend>
         <div>{{ form.csrf_token }}</div>
         <div>{{ form.email.label }}</div>
         <div>{{ form.email }}</div>
@@ -21,7 +21,11 @@
         <div>{{ form.remember }}</div>
         <div>{{ form.submit }}</div>
         <div>{% with messages = get_flashed_messages() %}
-        {{ messages }} {% endwith %}</div>
+    {% if messages and not current_user.is_authenticated %}
+    {% for message in messages %}
+        <span>{{ message }}</span>
+    {% endfor %}
+  {% endif %} {% endwith %}</div>
     </fieldset>
 </form></center>
 </body>

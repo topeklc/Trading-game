@@ -31,6 +31,14 @@ class RegistrationForm(FlaskForm):
         if user:
             raise ValidationError('That email is taken. PLease choose a different one.')
 
+    def validate_accept_policy(self, accept_policy):
+        if not accept_policy:
+            raise ValidationError("You have to accept policy!")
+
+    def validate_password(self, password):
+        if password != self.confirm:
+            raise ValidationError("Password must match!")
+
 
 class LoginForm(FlaskForm):
     email = StringField('Email', validators=[validators.DataRequired(), validators.Email()])

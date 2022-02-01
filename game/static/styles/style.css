@@ -1,7 +1,7 @@
 
 body {
   font-family: "Times New Roman", Times, serif;
-  background-color: darkgray;
+  background-color: darkgrey;
 }
 
 h1 {
@@ -26,7 +26,6 @@ input {
 }
 
 fieldset {
-  font-family: "Times New Roman", Times, serif;
   text-align: center;
   width:450px;
 
@@ -47,4 +46,11 @@ width: 100px;
 
   padding: 1em;
 
+}
+
+.navbar {
+  position: absolute;
+  right: 0px;
+  width: 100px;
+  padding: 10px;
 }
