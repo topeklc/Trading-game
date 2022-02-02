@@ -11,7 +11,7 @@ redis_url = os.getenv('REDIS_URL')
 app = Flask(__name__)
 secret_db = secrets.token_urlsafe(32)
 SESSION_TYPE = 'redis'
-app.config['SESSION_REDIS'] = redis.from_url(redis_url, ssl_cert_reqs=None)
+app.config['SESSION_REDIS'] = redis.from_url(redis_url)
 app.config['SECRET_KEY'] = secret_db
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 db = SQLAlchemy(app)

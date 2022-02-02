@@ -37,7 +37,7 @@ gunicorn==20.1.0
 Flask-Session==0.4
 
 # redis
-redis==3.5.3
+redis
 
 # plotly
 plotly
