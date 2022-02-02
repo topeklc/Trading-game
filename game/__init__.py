@@ -7,7 +7,7 @@ import redis
 import os
 from dotenv import load_dotenv
 load_dotenv()
-redis_url = os.getenv('REDIS_URL')
+redis_url = os.getenv('REDISTOGO_URL')
 app = Flask(__name__)
 secret_db = secrets.token_urlsafe(32)
 SESSION_TYPE = 'redis'
