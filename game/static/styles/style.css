@@ -54,3 +54,13 @@ width: 100px;
   width: 100px;
   padding: 10px;
 }
+
+.signup-messages {
+  margin: 0 auto;
+  text-align: left;
+  width: 300px;
+}
+
+.signup-messages-container {
+  margin-top: 10px;
+}

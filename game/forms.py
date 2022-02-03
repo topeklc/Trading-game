@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import FloatField, SubmitField, StringField, BooleanField, PasswordField, validators, ValidationError
 from wtforms.widgets import html5 as h5widgets
 from game.models import User
-
+from flask import flash
 
 class ActionForm(FlaskForm):
     amount = FloatField('amount', widget=h5widgets.NumberInput(min=0, step=0.1))
@@ -14,8 +14,8 @@ class ActionForm(FlaskForm):
 
 class RegistrationForm(FlaskForm):
     username = StringField('Username', [validators.Length(min=4, max=25)])
-    email = StringField('Email Address', [validators.Length(min=6, max=35)])
-    password = PasswordField('New Password', [validators.DataRequired()])
+    email = StringField('Email Address', [validators.Length(min=3, max=35)])
+    password = PasswordField('New Password', [validators.DataRequired(), validators.Length(min=6, max=35)])
     confirm = PasswordField('Repeat Password', [validators.DataRequired(),
                                                 validators.EqualTo('confirm', message='Password must match')])
     accept_policy = BooleanField('Privacy policy')
@@ -45,3 +45,26 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password', validators=[validators.DataRequired()])
     remember = BooleanField('Remember Me')
     submit = SubmitField('Login')
+
+
+def signup_validation(form):
+    if User.query.filter_by(email=form.email.data).first():
+        flash('User with this email exist!')
+    if User.query.filter_by(username=form.username.data).first():
+        flash('User with this username exist!')
+    if not form.accept_policy.data:
+        flash('You have to accept privacy policy!')
+    if form.password.data != form.confirm.data:
+        flash('Password must match!')
+    if len(form.password.data) < 6:
+        flash('Password must have at least 6 characters!')
+    if len(form.password.data) > 35:
+        flash('Password must have less than 35 characters!')
+    if len(form.username.data) < 4:
+        flash('Username must have at least 4 characters!')
+    if len(form.username.data) > 25:
+        flash('Username must have less than 25 characters!')
+    if len(form.email.data) < 3:
+        flash('Email address must have at least 3 characters!')
+    if len(form.email.data) > 35:
+        flash('Email address must have less than 35 characters!')

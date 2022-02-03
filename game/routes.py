@@ -1,4 +1,4 @@
-from flask import request, render_template, redirect, url_for, session, flash
+from flask import request, render_template, redirect, url_for, session
 from flask_login import login_user, current_user, logout_user
 import plotly
 import plotly.express as px
@@ -9,12 +9,14 @@ from game.main import *
 
 login_manager.init_app(app)
 
+
 @app.route('/')
 def mainpage():
     """
     Function rendering main page.
     """
     return render_template('index.html')
+
 
 @app.route('/signup', methods=['POST', 'GET'])
 def signup():
@@ -32,15 +34,11 @@ def signup():
         flash('Your account has been created! You are now able to log in', 'success')
         return redirect(url_for('login'))
     if form.email.data or form.username.data:
-        if User.query.filter_by(email=form.email.data).first():
-            flash('User with this email exist!')
-        elif User.query.filter_by(username=form.username.data).first():
-            flash('User with this username exist!')
-        elif not form.accept_policy.data:
-            flash('You have to accept privacy policy')
-        elif form.password.data != form.confirm.data:
-            flash('Passwords must match!')
+        # getting flash message/s if something went wrong.
+        signup_validation(form)
+
     return render_template('signup.html', form=form)
+
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
@@ -61,6 +59,7 @@ def login():
             flash('Login Unsuccessful.')
     return render_template('login.html', form=form)
 
+
 @app.route('/logout')
 def logout():
     logout_user()
@@ -74,6 +73,7 @@ def settings():
     Function render settings page.
     """
     return render_template('settings.html')
+
 
 @app.route('/settings', methods=['POST', 'GET'])
 def start_game():
