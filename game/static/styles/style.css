@@ -80,3 +80,7 @@ width: 100px;
 .leaderboard-points {
   text-align: right;
 }
+
+.margin-bot{
+  margin-bottom: 5px;
+}

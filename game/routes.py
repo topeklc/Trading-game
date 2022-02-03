@@ -135,6 +135,10 @@ def game_start():
         Date=date_lst,
         Value=entire_values_lst))
     fig = px.line(df, x="Date", y="Value", title="Entire value chart", width=450, height=250)
+    fig.update_layout({
+        'plot_bgcolor': 'rgba(169, 169, 169, 1)',
+        'paper_bgcolor': 'rgba(169, 169, 169, 1)',
+    })
     value_graph = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
     return render_template('started_game.html', cash=portfolio.cash,
                            starting_year=starting_year, now=now, zipped=zipped,
@@ -212,6 +216,10 @@ def another_day():
         Value=entire_values_lst
     ))
     fig = px.line(df, x="Date", y="Value", title="Entire value chart", width=450, height=250)
+    fig.update_layout({
+        'plot_bgcolor': 'rgba(169, 169, 169, 1)',
+        'paper_bgcolor': 'rgba(169, 169, 169, 1)',
+    })
     value_graph = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
     # Passing game object to cache
     session['game'] = game.encode()
@@ -274,8 +282,11 @@ def up_portfolio():
         Date=date_lst,
         Value=entire_values_lst))
     fig = px.line(df, x="Date", y="Value", title="Entire value chart", width=450, height=250)
+    fig.update_layout({
+        'plot_bgcolor': 'rgba(169, 169, 169, 1)',
+        'paper_bgcolor': 'rgba(169, 169, 169, 1)',
+    })
     value_graph = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
-
     assets_dict = {}
     forms = []
     # Creating list of forms for available assets
@@ -330,6 +341,10 @@ def scores():
         Value=entire_values_lst
     ))
     fig = px.line(df, x="Date", y="Value", title="Entire value chart", width=600, height=350)
+    fig.update_layout({
+    'plot_bgcolor': 'rgba(169, 169, 169, 1)',
+    'paper_bgcolor': 'rgba(169, 169, 169, 1)',
+    })
     value_graph = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
     # leaderboard
     leaderboard = []
