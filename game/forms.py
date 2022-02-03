@@ -3,6 +3,8 @@ from wtforms import FloatField, SubmitField, StringField, BooleanField, Password
 from wtforms.widgets import html5 as h5widgets
 from game.models import User
 from flask import flash
+from game import bcrypt
+
 
 class ActionForm(FlaskForm):
     amount = FloatField('amount', widget=h5widgets.NumberInput(min=0, step=0.1))
@@ -35,13 +37,12 @@ class RegistrationForm(FlaskForm):
         if not accept_policy:
             raise ValidationError("You have to accept policy!")
 
-    # def validate_password(self, password):
-    #     if password != self.confirm:
-    #         raise ValidationError("Password must match!")
+
 
 
 class LoginForm(FlaskForm):
-    email = StringField('Email', validators=[validators.DataRequired(), validators.Email()])
+
+    email = StringField('Email', validators=[validators.DataRequired()])
     password = PasswordField('Password', validators=[validators.DataRequired()])
     remember = BooleanField('Remember Me')
     submit = SubmitField('Login')
@@ -68,3 +69,12 @@ def signup_validation(form):
         flash('Email address must have at least 3 characters!')
     if len(form.email.data) > 35:
         flash('Email address must have less than 35 characters!')
+
+
+def login_validation(user, form):
+    try:
+        if not bcrypt.check_password_hash(user.password, form.password.data):
+            flash('Not valid password!')
+    except AttributeError:
+        flash('Email not register!')
+

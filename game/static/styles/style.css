@@ -55,12 +55,28 @@ width: 100px;
   padding: 10px;
 }
 
+.leaderboard-list {
+  margin: 0 auto;
+  width: 150px;
+}
+
+
 .signup-messages {
   margin: 0 auto;
   text-align: left;
   width: 300px;
 }
 
+.wrapper
 .signup-messages-container {
   margin-top: 10px;
+}
+
+.leaderboard-username {
+  float: left;
+  text-align: left;
+}
+
+.leaderboard-points {
+  text-align: right;
 }

@@ -26,6 +26,16 @@
     {% endfor %}
   {% endif %} {% endwith %}</div>
 </fieldset>
+<fieldset>
+    <legend>Leaderboard</legend>
+    <div class="leaderboard-container">
+    <div class="wrapper"><div class="leaderboard-username">Username</div><div class="leaderboard-points">Points</div></div>
+<ol class="leaderboard-list">
+    {% for leader in leaderboard %}
+        <li><div class="wrapper"><div class="leaderboard-username">{{ leader[0] }}</div><div class="leaderboard-points">{{ leader[1] }}</div></div></li>
+    {% endfor %}
+    </ol></div>
+</fieldset>
 </center>
 </body>
 </html>

@@ -1,11 +1,12 @@
-from flask import request, render_template, redirect, url_for, session
+from flask import request, render_template, redirect, url_for, session, flash
 from flask_login import login_user, current_user, logout_user
 import plotly
 import plotly.express as px
-from game.forms import *
-from game.models import *
+from game.forms import ActionForm, RegistrationForm, LoginForm, signup_validation, login_validation
+from game.models import login_manager, User
 from game import app, bcrypt, db
 from game.main import *
+
 
 login_manager.init_app(app)
 
@@ -56,7 +57,7 @@ def login():
             flash('Login successful.')
             return redirect('/')
         else:
-            flash('Login Unsuccessful.')
+            login_validation(user, form)
     return render_template('login.html', form=form)
 
 
@@ -330,7 +331,11 @@ def scores():
     ))
     fig = px.line(df, x="Date", y="Value", title="Entire value chart", width=600, height=350)
     value_graph = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)
-    print(entire_values_lst)
-    return render_template('stats.html', entire_value=entire_value, roi=roi, value_graph=value_graph)
+    # leaderboard
+    leaderboard = []
+    users = User.query.order_by(User.best_score.desc()).limit(10).all()
+    for user in users:
+        leaderboard.append((user.username, user.best_score))
+    return render_template('stats.html', entire_value=entire_value, roi=roi, value_graph=value_graph, leaderboard=leaderboard)
 
 
