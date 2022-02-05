@@ -23,7 +23,7 @@ brent_history = yf.Ticker("BZ=F").history(start="2016-12-31", end="2022-1-1")
 class Asset:
     def __init__(self, name: str, history) -> None:
         """
-        Create asset instance with name and history dataframe.
+        Creates asset instance with name and history dataframe.
         """
         self.name = name
         self.history = history
@@ -32,7 +32,7 @@ class Asset:
 class Game:
     def __init__(self, year: int = 2017) -> None:
         """
-        Initializing Game instance main variables
+        Initialize Game instance main variables
         """
         self.start = datetime.datetime.strptime(f"{year}-01-01", "%Y-%m-%d").strftime(
             "%d-%m-%Y"
@@ -51,7 +51,7 @@ class Game:
     @staticmethod
     def get_asset_price(asset: Asset, current_day: str) -> float:
         """
-        Getting asset price.
+        Gets asset price.
             Parameters:
                 asset (Asset): Instance of class Asset.
                 current_day (str): String represents date in format YYYY-MM-DD.
@@ -63,7 +63,7 @@ class Game:
 
     def next_day(self) -> None:
         """
-        Moving to another day.
+        Moves to another day.
         """
         try:
             self.day += 1
@@ -87,7 +87,7 @@ class Game:
 
 class Portfolio:
     def __init__(self, start_cash: int = 0) -> None:
-        """Initializing main variables."""
+        """Initialize main variables."""
         self.start_cash = float(start_cash)
         self.cash = self.start_cash
         # First item in value list is amount of asset that user own.
@@ -111,11 +111,11 @@ class Portfolio:
     def buy_asset(self, amount: float, asset: Asset, game: Game) -> None:
         """
         Called when user try to buy asset.
-        Check if user has enough money to buy and update portfolio state.
+        Checks if user has enough money to buy and update portfolio state.
             Parameters:
                 amount (float): Float number represents amount of asset which user wants to buy.
                 asset (Asset): Instance of class Asset represents asset which user wants to buy.
-                game (Game): Instance of class Game represents current game state.
+                game (Game): Instance of Game class represents current game state.
         """
         amount = int(amount * 10)
         if float(self.cash) >= (
@@ -136,11 +136,11 @@ class Portfolio:
     def sell_asset(self, amount: float, asset: Asset, game: Game) -> None:
         """
         Called when user try to sell asset.
-        Check if user has enough asset to sell and update portfolio state.
+        Checks if user has enough asset to sell and update portfolio state.
             Parameters:
                 amount (float): Float represents amount of asset which user wants to sell.
                 asset (Asset): Instance of class Asset represents asset which user wants to sell.
-                game (Game): Instance of class Game represents current game state.
+                game (Game): Instance of Game class represents current game state.
         """
         amount = int(amount * 10)
         if self.asset_amounts[asset.name][0] >= amount:
@@ -158,10 +158,10 @@ class Portfolio:
 
     def entire_portfolio_value(self, game: Game) -> float:
         """
-        Function calculating whole portfolio value. Since stocks have no price feed at weekends and holidays
+        Calculates whole portfolio value. Since stocks have no price feed at weekends and holidays
         It has to check few previous days to find price of asset for portfolio value calculation.
             Parameters:
-                game (Game): Instance of class Game represents current game state.
+                game (Game): Instance of Game class represents current game state.
             Returns:
                 self.entire_value (float): Float number represents current user's portfolio value
         """
@@ -202,7 +202,7 @@ class Portfolio:
 
 
 """
-Initializing Asset class instances.
+Initialize Asset class instances.
 """
 microsoft = Asset("Microsoft", msft_history)
 apple = Asset("Apple", apple_history)
