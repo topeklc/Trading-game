@@ -1,2 +1,4 @@
 .env
 game/database.db
+.idea/
+__pycache__
