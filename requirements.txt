@@ -47,3 +47,6 @@ python-dotenv
 
 # email_validator
 email-validator==1.1.3
+# psycopg2
+psycopg2
+
