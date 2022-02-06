@@ -10,11 +10,12 @@ from dotenv import load_dotenv
 load_dotenv()
 redis_url = os.getenv("REDISTOGO_URL")
 app = Flask(__name__)
+db_url = os.getenv("DATABASE_URL")
 secret_db = secrets.token_urlsafe(32)
 SESSION_TYPE = "redis"
 app.config["SESSION_REDIS"] = redis.from_url(redis_url)
 app.config["SECRET_KEY"] = secret_db
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///database.db"
+app.config["SQLALCHEMY_DATABASE_URI"] = db_url
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 secret = secrets.token_urlsafe(32)
