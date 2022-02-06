@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="{{ url_for('static',filename='styles/style.css') }}">
+    <title>Trading Game</title>
+</head>
+<body>
+<div class="navbar">
+    {% if current_user.is_authenticated %}
+    <a href="{{ url_for('logout') }}">Logout</a>
+    {% endif %}
+    {% if not current_user.is_authenticated %}
+    <a href="{{ url_for('login') }}">Login</a>
+    {% endif %}
+</div>
+<h1>Trading Game</h1>
+<br>
+<br>
+<center><form method="POST">
+    <fieldset>
+   <legend>Sign Up</legend>
+        <div>{{ form.csrf_token }}</div>
+        <div>{{ form.email.label }}</div>
+        <div>{{ form.email }}</div>
+        <div>{{ form.username.label }}</div>
+        <div>{{ form.username }}</div>
+        <div>{{ form.password.label }}</div>
+        <div>{{ form.password }}</div>
+        <div>{{ form.confirm.label }}</div>
+        <div>{{ form.confirm }}</div>
+        <div>{{ form.accept_policy.label }}</div>
+        <div>{{ form.accept_policy }}</div>
+        <div>{{ form.submit }}</div>
+        <div class="signup-messages-container">{% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+            <ul class="signup-messages"><li>{{ message }}</li></ul>
+        {% endfor %}{% endif %} {% endwith %}</div>
+        </fieldset>
+</form></center>
+</body>
+</html>
