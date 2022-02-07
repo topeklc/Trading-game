@@ -3,7 +3,7 @@ on:
   pull_request:
 
 jobs:
-  flake8:
+  mypy:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
