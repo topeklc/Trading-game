@@ -1,4 +1,4 @@
-from game.__init__ import db, app, bcrypt
+from game.__init__ import db, app
 from flask_login import UserMixin, LoginManager
 
 
@@ -17,12 +17,6 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
     best_score = db.Column(db.Integer)
-
-    def __init__(self, username: str, email: str, password: str, best_score: int = 0):
-        self.username = username
-        self.email = email
-        self.hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")
-        self.best_score = best_score
 
     def __repr__(self):
         return f"User('{self.username}', '{self.email}')"

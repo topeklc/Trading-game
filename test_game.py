@@ -1,20 +1,6 @@
 from game.game import *
-from game.models import User
 
 
-"""Test creating new user"""
-
-
-def test_new_user():
-    """
-    GIVEN a User model.
-    WHEN a new User is created.
-    THEN check the email, hashed_password, and role fields are defined correctly.
-    """
-    user = User('TestUser', 'somemailfor@test', 'SoStrongPassword')
-    assert user.username == 'TestUser'
-    assert user.email == 'somemailfor@test'
-    assert user.hashed_password != 'SoStrongPassword'
 
 
 """Test Game class functions"""
@@ -101,4 +87,3 @@ def test_sell_asset():
     assert portfolio.cash == portfolio.start_cash
     assert portfolio.asset_amounts['Bitcoin'][0] == 0
 
-# check if tests run with GitHub actions when push...
