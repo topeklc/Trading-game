@@ -1,6 +1,4 @@
-from game.game import *
-
-
+from game.game import Game, bitcoin, Portfolio
 
 
 """Test Game class functions"""
