@@ -15,7 +15,20 @@ on:
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
+  test:
+    runs-on: ubuntu-latest
+    steps:
+        # Checkout the latest code from the repo
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        # Install pytest (you can use some other testing utility)
+      - name: Install pytest
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytest
+        # Run the pytest.
+      - name: Run tests
+        run: pytest test_game.py
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
