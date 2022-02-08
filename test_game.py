@@ -100,3 +100,5 @@ def test_sell_asset():
     portfolio.sell_asset(100, bitcoin, game)
     assert portfolio.cash == portfolio.start_cash
     assert portfolio.asset_amounts['Bitcoin'][0] == 0
+
+# check if tests run with GitHub actions when push...
