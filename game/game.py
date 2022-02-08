@@ -3,9 +3,10 @@ import pandas as pd
 import datetime
 import json
 
-"""
-Getting from yahoo.finance dataframes(price history) for all assets.
-"""
+
+"""Getting from yahoo.finance dataframes(price history) for all assets."""
+
+
 # Stocks
 msft_history = yf.Ticker("MSFT").history(start="2016-12-31", end="2022-1-1")
 apple_history = yf.Ticker("AAPL").history(start="2016-12-31", end="2022-1-1")
