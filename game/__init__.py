@@ -12,7 +12,7 @@ redis_url = os.getenv("REDISTOGO_URL")
 app = Flask(__name__)
 try:
     db_url = os.getenv("DATABASE_URL").replace("postgres://", "postgresql://")
-except TypeError:
+except AttributeError:
     print('GitHub actions test!')
 secret_db = secrets.token_urlsafe(32)
 SESSION_TYPE = "redis"
