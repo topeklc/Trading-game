@@ -12,7 +12,7 @@ def test_asset_price():
     """
     game = Game(2017)
     for date in game.date_list:
-        assert isinstance(game.get_asset_price(bitcoin, date), float) == True
+        assert isinstance(game.get_asset_price(bitcoin, date), float)
 
 
 def test_next_day():
@@ -39,7 +39,7 @@ def test_encode():
     THEN check if encode returned object is a string.
     """
     game = Game(2017)
-    assert isinstance(game.encode(), str) == True
+    assert isinstance(game.encode(), str)
 
 
 """Test Portfolio class functions"""
@@ -84,4 +84,3 @@ def test_sell_asset():
     portfolio.sell_asset(100, bitcoin, game)
     assert portfolio.cash == portfolio.start_cash
     assert portfolio.asset_amounts['Bitcoin'][0] == 0
-
