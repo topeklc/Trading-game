@@ -10,7 +10,10 @@ from dotenv import load_dotenv
 load_dotenv()
 redis_url = os.getenv("REDISTOGO_URL")
 app = Flask(__name__)
-db_url = os.getenv("DATABASE_URL").replace("postgres://", "postgresql://")
+try:
+    db_url = os.getenv("DATABASE_URL").replace("postgres://", "postgresql://")
+except TypeError:
+    print('GitHub actions test!')
 secret_db = secrets.token_urlsafe(32)
 SESSION_TYPE = "redis"
 app.config["SESSION_REDIS"] = redis.from_url(redis_url)
