@@ -31,7 +31,7 @@ jobs:
         env:
             DATABASE_URL: ${{ secrets.DATABASE_URL }}
             REDISTOGO_URL: ${{ secrets.REDISTOGO_URL }}
-        run: pytest test_game.py
+        run: coverage run -m pytest ./tests
   build:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
