@@ -20,10 +20,12 @@ def generate_chart(date_lst: list, entire_values_lst: list) -> str:
     fig = px.line(
         df, x="Date", y="Value", title="Entire value chart", width=450, height=250
     )
+    fig.update_traces(line_color='#000000')
     fig.update_layout(
         {
-            "plot_bgcolor": "rgba(169, 169, 169, 1)",
-            "paper_bgcolor": "rgba(169, 169, 169, 1)",
+            "plot_bgcolor": "rgba(235, 234, 233, 1)",
+            "paper_bgcolor": "rgba(235, 234, 233, 1)",
+            "font_color": "rgba(0, 0, 0, 1)"
         }
     )
     value_graph = json.dumps(fig, cls=plotly.utils.PlotlyJSONEncoder)

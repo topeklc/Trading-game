@@ -1,0 +1,32 @@
+<!-- Navbar -->
+<div class="navigation container-fluid">
+   <div class="row justify-content-md-center ">
+      <div class="col-md-10 col-sm-12">
+         <nav class="navbar navbar-default">
+            <img src="{{ url_for('static',filename='images/logo.png') }}" height="110" alt="Logo">
+            <div class="button_container" id="toggle">
+               <span class="black top"></span>
+               <span class="black middle"></span>
+               <span class="black bottom"></span>
+            </div>
+            <div class="overlay" id="overlay">
+               <nav class="overlay-menu">
+                  <ul>
+                     {% if not current_user.is_authenticated %}
+                     <li> <a href="{{ url_for('settings') }}">Start</a></li>
+                     {% endif %}
+                     {% if current_user.is_authenticated %}
+                     <li> <a href="{{ url_for('settings') }}">Start</a></li>
+                     <li> <a href="{{ url_for('logout') }}">Logout</a></li>
+                     {% elif not current_user.is_authenticated %}
+                     <li> <a href="{{ url_for('login') }}">Login</a></li>
+                     <li> <a href="{{ url_for('signup') }}">Signup</a></li>
+                     {% endif %}
+                  </ul>
+               </nav>
+            </div>
+         </nav>
+      </div>
+   </div>
+</div>
+<!-- End Navbar -->

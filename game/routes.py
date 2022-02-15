@@ -62,7 +62,7 @@ def login():
         if user and bcrypt.check_password_hash(user.password, form.password.data):
             login_user(user, remember=form.remember.data)
             flash("Login successful.")
-            return redirect("/")
+            return redirect("/settings")
         else:
             login_validation(user, form)
     return render_template("login.html", form=form)

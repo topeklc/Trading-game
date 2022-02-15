@@ -1,41 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <link rel="stylesheet" href="{{ url_for('static',filename='styles/style.css') }}">
-    <title>Trading Game</title>
-</head>
-<body>
-<div class="navbar">
-    {% if current_user.is_authenticated %}
-    <a href="{{ url_for('logout') }}">Logout</a>
-    {% endif %}
-    {% if not current_user.is_authenticated %}
-    <a href="{{ url_for('login') }}">Login</a>
-    {% endif %}
+{% extends 'main.html' %}
+{% block content %}
 
-</div>
-<h1>Trading Game</h1>
-<br>
-<br>
-<center>
-    <fieldset>
-   <legend>Main Menu</legend>
-        {% if not current_user.is_authenticated %}
-        <div><form method="POST" action="settings"><input type="submit" name="guest" value="Start as guest"></form></div>
-        <div><form method="POST" action="login"><input type="submit" name="login" value="Login"></form></div>
-        <div><form method="POST" action="signup"><input type="submit" name="signup" value="Signup"></form></div>
-        {% else %}
-        <div><form method="POST" action="settings"><input type="submit" name="guest" value="Start"></form></div>
-        {% endif %}
-        <div class="flash">{% with messages = get_flashed_messages() %}
-    {% if messages %}
-    {% for message in messages %}
-        <span>{{ message }}</span>
-    {% endfor %}
-  {% endif %} {% endwith %}</div>
-    </fieldset>
-</center>
-</body>
-</html>
 
+      <!-- Portfolio-Text -->
+      <div class="container-fluid pb-5 portfolio-text">
+         <div class="row">
+            <div class="col-md-7 offset-md-1 col-sm-12">
+               <h2>Test yourself on the market based on historical prices!
+               </h2>
+            </div>
+         </div>
+         <div class="row">
+            <div class="col-md-7 offset-md-1 col-sm-12">
+               <p class="pb-5 pt-5">
+Choose a year, startup capital and try to get the best return on your investment. Good luck!</p>
+            </div>
+         </div>
+      </div>
+      <!-- End Portfolio-Text -->
+
+
+
+{% endblock content %}

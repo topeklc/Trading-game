@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+   <head>
+      <!-- Meta -->
+      <title>Home</title>
+      <meta charset="UTF-8">
+      <meta name="description" content="Free HTML template">
+      <meta name="keywords" content="HTML, template, free">
+      <meta name="author" content="Nicola Tolin">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <!-- Styles -->
+      <link href="{{ url_for('static',filename='bootstrap/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css"/>
+      <link href="{{ url_for('static',filename='animate/animate.css') }}" rel="stylesheet" type="text/css"/>
+      <link href="{{ url_for('static',filename='styles/style.css') }}" rel="stylesheet" type="text/css"/>
+   </head>
+   <body>
+
+            {% include 'navbar.html' %}
+            <div class="content"><hr>{% block content %}
+
+            {% endblock content %}</div>
+      <!-- Footer -->
+      <div class="container-fluid footer ">
+         <div class="row">
+            <div class="col-xl-2 col-md-8 offset-md-1 col-sm-12 ">
+            </div>
+            <div class="col-xl-2 col-md-8 offset-md-1 col-sm-12 ">
+            </div>
+            <div class="col-xl-2 col-md-8 offset-md-1 col-sm-12">
+            </div>
+         </div>
+      </div>
+      <!-- End Footer -->
+      <!-- Javascript -->
+      <script src="{{ url_for('static',filename='jquery.min.js') }}"></script>
+      <script src="{{ url_for('static',filename='bootstrap/js/bootstrap.min.js') }}"></script>
+      <script src="{{ url_for('static',filename='wow/wow.js') }}"></script>
+      <script src="{{ url_for('static',filename='script.js') }}"></script>
+      <script>
+         new WOW().init();
+      </script>
+      <!-- End Javascript -->
+   </body>
+</html>
