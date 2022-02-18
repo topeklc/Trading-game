@@ -18,7 +18,7 @@ def generate_chart(date_lst: list, entire_values_lst: list) -> str:
     """
     df = pd.DataFrame(dict(Date=date_lst, Value=entire_values_lst))
     fig = px.line(
-        df, x="Date", y="Value", title="Entire value chart", width=450, height=250
+        df, x="Date", y="Value", title="Portfolio value", width=450, height=250
     )
     fig.update_traces(line_color='#000000')
     fig.update_layout(
